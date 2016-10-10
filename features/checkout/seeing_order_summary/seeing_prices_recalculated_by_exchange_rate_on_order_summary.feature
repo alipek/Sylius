@@ -13,7 +13,7 @@ Feature: Seeing prices recalculated by exchange rate on order summary
         And that channel allows to shop using the "GBP" currency with exchange rate 3.0
         And that channel uses the "USD" currency by default
         And the store has a product "Lannister Coat" priced at "$100.00"
-        And the store has "DHL" shipping method with "$20.00" fee within "EN" zone
+        And the store has "DHL" shipping method with "$20.00" fee within the "EN" zone
         And the store allows paying offline
         And I am a logged in customer
 
@@ -22,7 +22,7 @@ Feature: Seeing prices recalculated by exchange rate on order summary
         When I change my currency to "British Pound"
         And I add product "Lannister Coat" to the cart
         And I specified the shipping address as "Ankh Morpork", "Frost Alley", "90210", "British Virgin Islands" for "Jon Snow"
-        And I proceed order with "DHL" shipping method and "Offline" payment
+        And I proceed with "DHL" shipping method and "Offline" payment
         Then I should be on the checkout summary step
         And the "Lannister Coat" product should have unit price "£300.00"
         And my order shipping should be "£60"
@@ -33,7 +33,7 @@ Feature: Seeing prices recalculated by exchange rate on order summary
         When I change my currency to "British Pound"
         And I add product "Lannister Coat" to the cart
         And I specified the shipping address as "Ankh Morpork", "Frost Alley", "90210", "British Virgin Islands" for "Jon Snow"
-        And I proceed order with "DHL" shipping method and "Offline" payment
+        And I proceed with "DHL" shipping method and "Offline" payment
         And the exchange rate for currency "British Pound" was changed to 2.0
         Then I should be on the checkout summary step
         And the "Lannister Coat" product should have unit price "£300.00"

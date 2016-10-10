@@ -29,13 +29,18 @@ sylius:
             roles: Role
         channel:
             taxonomies: Taxonomie
+            locale_default: Výchozí Jazyk
             locales: Lokalizace
             currency_default: Výchozí měna
             currencies: Měny
             shipping_methods: Způsoby dopravy
             payment_methods: Způsoby platby
+            tax_calculation_strategy: Strategie výpočtu daně
             tax_zone_default: Výchozí sazba DPH
+            theme: Vzhled
+            hostname: Hostname
         image:
+            code: Kód
             file: Obrázek
         locale:
             code: Kód
@@ -53,6 +58,7 @@ sylius:
             id: ID
             title: Název
         product:
+            images: Obrázky
             restricted_zone: Zóna s omezeným přístupem
             shipping_category: Typ dopravy
             short_description: Stručný popis
@@ -64,19 +70,6 @@ sylius:
             code: Kód
         product_variant:
             tax_category: Typ daně
-        settings:
-            general:
-                currency: Výchozí měna
-                locale: Jazyk
-                meta_description: Meta popis
-                meta_keywords: Meta klíčová slova
-                title: Název stránky
-                tracking_code:
-                    Tracking code (for example: Kód Google Analytics)
-            taxation:
-                default_tax_zone: Výchozí sazba DPH
-            security:
-                enabled: Povolit?
         shipment_filter:
             created_at_from: Od
             created_at_to: Do
@@ -92,7 +85,9 @@ sylius:
         shipping_method:
             zone: Oblast
         taxon:
+            code: Kód
             file: Vybrat obrázek
+            images: Obrázky
         taxonomy:
             file: Vybrat obrázek
         user:
@@ -110,9 +105,9 @@ sylius:
         variant:
             depth: Hloubka
             height: Výška
-            images: Obrázky
             on_hand: Aktuálně skladem
             price: Cena
+            original_price: Původní cena
             sku: SKU
             weight: Hmotnost
             width: Šířka
@@ -122,6 +117,9 @@ sylius:
                 value: Hodnota
         guest:
             email: Email
+        product_association:
+            product: Související produkt
+            type: Typy asociace
         product_association_type:
             name: Jméno
         promotion_rule:
@@ -140,3 +138,17 @@ sylius:
             name: Potvrzení odeslání
         user_confirmation:
             name: Potvrzení uživatele
+            subject: Vítejte v našem obchodě
+            content: 'Vítejte v našem obchodě <br/> <br/> jste se právě zaregistrovali. <br/> Děkujeme vám %username%.'
+        password_reset:
+            name: Obnovení hesla
+            content: '<h3>Dobrý den %username%</h3> Chcete-li obnovit vaše heslo - navštivte %url% <br/> <br/> S pozdravem, tým.'
+        verification:
+            name: Ověření emailové adresy
+            content: 'Chcete-li ověřit svou e-mailovou adresu - prosím navštivte %url%'
+    payum_gateway:
+        cash_on_delivery: Platba na dobírku
+        offline: Offline
+        paypal_express_checkout: PayPal Express Checkout
+    shipping_method_resolver:
+        by_zones_and_channel: Podle zóny a kanálu

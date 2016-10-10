@@ -13,22 +13,22 @@ namespace Sylius\Component\Core\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Sylius\Component\Cart\Model\Cart;
 use Sylius\Component\Channel\Model\ChannelInterface as BaseChannelInterface;
 use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\Component\Core\OrderPaymentStates;
 use Sylius\Component\Core\OrderShippingStates;
-use Sylius\Component\Payment\Model\PaymentInterface as BasePaymentInterface;
-use Sylius\Component\Promotion\Model\CouponInterface as BaseCouponInterface;
-use Sylius\Component\Promotion\Model\PromotionInterface as BasePromotionInterface;
 use Sylius\Component\Customer\Model\CustomerInterface as BaseCustomerInterface;
+use Sylius\Component\Order\Model\Order as BaseOrder;
+use Sylius\Component\Payment\Model\PaymentInterface as BasePaymentInterface;
+use Sylius\Component\Promotion\Model\PromotionCouponInterface as BaseCouponInterface;
+use Sylius\Component\Promotion\Model\PromotionInterface as BasePromotionInterface;
 use Webmozart\Assert\Assert;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  * @author Michał Marcinkowski <michal.marcinkowski@lakion.com>
  */
-class Order extends Cart implements OrderInterface
+class Order extends BaseOrder implements OrderInterface
 {
     /**
      * @var BaseCustomerInterface
@@ -71,6 +71,11 @@ class Order extends Cart implements OrderInterface
     protected $exchangeRate = 1.0;
 
     /**
+     * @var string
+     */
+    protected $localeCode;
+
+    /**
      * @var BaseCouponInterface
      */
     protected $promotionCoupon;
@@ -96,6 +101,11 @@ class Order extends Cart implements OrderInterface
      * @var Collection|BasePromotionInterface[]
      */
     protected $promotions;
+
+    /**
+     * @var string
+     */
+    protected $tokenValue;
 
     public function __construct()
     {
@@ -292,14 +302,14 @@ class Order extends Cart implements OrderInterface
     /**
      * {@inheritdoc}
      */
-    public function getLastPayment($state = BasePaymentInterface::STATE_NEW)
+    public function getLastNewPayment()
     {
         if ($this->payments->isEmpty()) {
             return null;
         }
 
-        $payment = $this->payments->filter(function (BasePaymentInterface $payment) use ($state) {
-            return $payment->getState() === $state;
+        $payment = $this->payments->filter(function (BasePaymentInterface $payment) {
+            return $payment->getState() === BasePaymentInterface::STATE_NEW;
         })->last();
 
         return $payment !== false ? $payment : null;
@@ -341,6 +351,14 @@ class Order extends Cart implements OrderInterface
             $shipment->setOrder(null);
             $this->shipments->removeElement($shipment);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeShipments()
+    {
+        $this->shipments->clear();
     }
 
     /**
@@ -420,6 +438,24 @@ class Order extends Cart implements OrderInterface
     /**
      * {@inheritdoc}
      */
+    public function getLocaleCode()
+    {
+        return $this->localeCode;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setLocaleCode($localeCode)
+    {
+        Assert::string($localeCode);
+
+        $this->localeCode = $localeCode;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getShippingState()
     {
         return $this->shippingState;
@@ -452,18 +488,6 @@ class Order extends Cart implements OrderInterface
         }
 
         return $last;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isInvoiceAvailable()
-    {
-        if (false !== $lastShipment = $this->getLastShipment()) {
-            return in_array($lastShipment->getState(), [ShipmentInterface::STATE_RETURNED, ShipmentInterface::STATE_SHIPPED]);
-        }
-
-        return false;
     }
 
     /**
@@ -549,5 +573,21 @@ class Order extends Cart implements OrderInterface
         }
 
         return $orderPromotionTotal;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTokenValue($tokenValue)
+    {
+        $this->tokenValue = $tokenValue;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTokenValue()
+    {
+        return $this->tokenValue;
     }
 }

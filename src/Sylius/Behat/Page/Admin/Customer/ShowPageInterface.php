@@ -63,4 +63,23 @@ interface ShowPageInterface extends PageInterface
      * @return bool
      */
     public function hasAccount();
+
+    /**
+     * @return bool
+     */
+    public function isSubscribedToNewsletter();
+
+    /**
+     * @param string $provinceName
+     *
+     * @return bool
+     */
+    public function hasShippingProvinceName($provinceName);
+
+    /**
+     * @param string $provinceName
+     *
+     * @return bool
+     */
+    public function hasBillingProvinceName($provinceName);
 }

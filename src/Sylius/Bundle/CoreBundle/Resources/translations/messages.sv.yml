@@ -40,6 +40,7 @@ sylius:
             theme: Tema
             hostname: Värdnamn
         image:
+            code: Kod
             file: Bild
         locale:
             code: Kod
@@ -57,6 +58,7 @@ sylius:
             id: ID
             title: Titel
         product:
+            images: Bilder
             restricted_zone: Begränsat område
             shipping_category: Kategori
             short_description: Kort beskrivning
@@ -69,20 +71,6 @@ sylius:
             code: Kod
         product_variant:
             tax_category: Momskategori
-        settings:
-            general:
-                currency: Standardvaluta
-                locale: Språk
-                meta_description: Metabeskrivning
-                meta_keywords: Metasökord
-                title: Sidans titel
-                tracking_code:
-                    Tracking code (for example: Google Analytics-kod)
-            taxation:
-                default_tax_zone: Standardmomszon
-                default_tax_calculation_strategy: Standard skatteberäkningsstrategi
-            security:
-                enabled: Aktivera?
         shipment_filter:
             created_at_from: Från
             created_at_to: Till
@@ -97,7 +85,9 @@ sylius:
         shipping_method:
             zone: Zon
         taxon:
+            code: Kod
             file: Välj bild
+            images: Bilder
         taxonomy:
             file: Välj bild
         user:
@@ -115,7 +105,6 @@ sylius:
         variant:
             depth: Djup
             height: Höjd
-            images: Bilder
             on_hand: I lager
             price: Pris
             original_price: Ursprungligt pris
@@ -149,7 +138,6 @@ sylius:
             name: Orderkommentar
         shipment_confirmation:
             name: Leveransbekräftelse
-            content: 'Din beställning har skickats.<br/>Tack för din beställning.'
         user_confirmation:
             name: Användarbekräftelse
             subject: Välkommen till vår butik

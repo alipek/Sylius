@@ -12,9 +12,11 @@
 namespace Sylius\Behat\Page\Admin\Promotion;
 
 use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\ElementNotFoundException;
 use Sylius\Behat\Behaviour\NamesIt;
 use Sylius\Behat\Behaviour\SpecifiesItsCode;
 use Sylius\Behat\Page\Admin\Crud\CreatePage as BaseCreatePage;
+use Webmozart\Assert\Assert;
 
 /**
  * @author Mateusz Zalewski <mateusz.zalewski@lakion.com>
@@ -125,15 +127,30 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
     /**
      * {@inheritdoc}
      */
+    public function getValidationMessageForAction()
+    {
+        $actionForm = $this->getLastAddedCollectionItem('actions');
+
+        $foundElement = $actionForm->find('css', '.sylius-validation-error');
+        if (null === $foundElement) {
+            throw new ElementNotFoundException($this->getSession(), 'Tag', 'css', '.sylius-validation-error');
+        }
+
+        return $foundElement->getText();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getDefinedElements()
     {
         return [
-            'starts_at' => '#sylius_promotion_startsAt',
-            'ends_at' => '#sylius_promotion_endsAt',
             'actions' => '#sylius_promotion_actions',
             'code' => '#sylius_promotion_code',
+            'ends_at' => '#sylius_promotion_endsAt',
             'name' => '#sylius_promotion_name',
             'rules' => '#sylius_promotion_rules',
+            'starts_at' => '#sylius_promotion_startsAt',
         ];
     }
 
@@ -144,8 +161,10 @@ class CreatePage extends BaseCreatePage implements CreatePageInterface
      */
     private function getLastAddedCollectionItem($collection)
     {
-        $rules = $this->getElement($collection)->findAll('css', 'div[data-form-collection="item"]');
+        $items = $this->getElement($collection)->findAll('css', 'div[data-form-collection="item"]');
 
-        return end($rules);
+        Assert::notEmpty($items);
+
+        return end($items);
     }
 }

@@ -39,6 +39,7 @@ sylius:
             theme: Tema
             hostname: Emri i hostit
         image:
+            code: Kodi
             file: Imazhi
         locale:
             code: Kodi
@@ -56,6 +57,7 @@ sylius:
             id: ID
             title: Titulli
         product:
+            images: Imazhet
             restricted_zone: Zonë e kufizuar
             shipping_category: Kategoria e dërgesës
             short_description: Përshkrim i shkurtër
@@ -68,20 +70,6 @@ sylius:
             code: Kodi
         product_variant:
             tax_category: Kategoria e taksimit
-        settings:
-            general:
-                currency: Monedha e paracaktuar
-                locale: Gjuha
-                meta_description: Meta përshkrim
-                meta_keywords: Meta fjalë kyçe
-                title: Titulli i faqes
-                tracking_code:
-                    Tracking code (for example: Kodi i gjurmimit (psh. Google Analytics)
-            taxation:
-                default_tax_zone: Zona e paracakruar e taksimit
-                default_tax_calculation_strategy: Strategjia baze e llogaritjes se taksave
-            security:
-                enabled: E aktivizon?
         shipment_filter:
             created_at_from: Nga (dërguesi)
             created_at_to: Për (marrësi)
@@ -97,7 +85,9 @@ sylius:
         shipping_method:
             zone: Zona
         taxon:
+            code: Kodi
             file: Zgjidh imazhin
+            images: Imazhet
         taxonomy:
             file: Zgjidh imazhin
         user:
@@ -115,7 +105,6 @@ sylius:
         variant:
             depth: Thellësia
             height: Lartësia
-            images: Imazhet
             on_hand: Fondi aktual
             price: Çmimi
             original_price: Çmimi fillestar

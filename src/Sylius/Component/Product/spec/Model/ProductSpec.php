@@ -11,20 +11,19 @@
 
 namespace spec\Sylius\Component\Product\Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Sylius\Component\Association\Model\AssociableInterface;
-use Sylius\Component\Product\Model\ArchetypeInterface;
-use Sylius\Component\Product\Model\AttributeValueInterface;
-use Sylius\Component\Product\Model\OptionInterface;
+use Sylius\Component\Product\Model\Product;
 use Sylius\Component\Product\Model\ProductAssociationInterface;
+use Sylius\Component\Product\Model\ProductAttributeValueInterface;
 use Sylius\Component\Product\Model\ProductInterface;
-use Sylius\Component\Product\Model\VariantInterface;
+use Sylius\Component\Product\Model\ProductOptionInterface;
+use Sylius\Component\Product\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Model\ToggleableInterface;
 
 /**
+ * @mixin Product
+ *
  * @author Paweł Jędrzejewski <pawel@sylius.org>
  * @author Gonzalo Vilaseca <gvilaseca@reiss.co.uk>
  */
@@ -38,7 +37,7 @@ final class ProductSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Sylius\Component\Product\Model\Product');
+        $this->shouldHaveType(Product::class);
     }
 
     function it_implements_Sylius_product_interface()
@@ -59,17 +58,6 @@ final class ProductSpec extends ObjectBehavior
     function it_has_no_id_by_default()
     {
         $this->getId()->shouldReturn(null);
-    }
-
-    function it_does_not_belong_to_any_archetype_by_default()
-    {
-        $this->getArchetype()->shouldReturn(null);
-    }
-
-    function it_can_belong_to_a_product_archetype(ArchetypeInterface $archetype)
-    {
-        $this->setArchetype($archetype);
-        $this->getArchetype()->shouldReturn($archetype);
     }
 
     function it_has_no_name_by_default()
@@ -141,7 +129,7 @@ final class ProductSpec extends ObjectBehavior
         $this->getAttributes()->shouldHaveType('Doctrine\Common\Collections\Collection');
     }
 
-    function it_adds_attribute(AttributeValueInterface $attribute)
+    function it_adds_attribute(ProductAttributeValueInterface $attribute)
     {
         $attribute->setProduct($this)->shouldBeCalled();
 
@@ -149,7 +137,7 @@ final class ProductSpec extends ObjectBehavior
         $this->hasAttribute($attribute)->shouldReturn(true);
     }
 
-    function it_removes_attribute(AttributeValueInterface $attribute)
+    function it_removes_attribute(ProductAttributeValueInterface $attribute)
     {
         $attribute->setProduct($this)->shouldBeCalled();
 
@@ -168,8 +156,8 @@ final class ProductSpec extends ObjectBehavior
     }
 
     function its_hasVariants_should_return_true_only_if_multiple_variants_are_defined(
-        VariantInterface $firstVariant,
-        VariantInterface $secondVariant
+        ProductVariantInterface $firstVariant,
+        ProductVariantInterface $secondVariant
     ) {
         $firstVariant->setProduct($this)->shouldBeCalled();
         $secondVariant->setProduct($this)->shouldBeCalled();
@@ -185,7 +173,7 @@ final class ProductSpec extends ObjectBehavior
         $this->getAvailableVariants()->shouldHaveType('Doctrine\Common\Collections\Collection');
     }
 
-    function it_does_not_include_unavailable_variants_in_available_variants(VariantInterface $variant)
+    function it_does_not_include_unavailable_variants_in_available_variants(ProductVariantInterface $variant)
     {
         $variant->isAvailable()->willReturn(false);
 
@@ -196,8 +184,8 @@ final class ProductSpec extends ObjectBehavior
     }
 
     function it_returns_available_variants(
-        VariantInterface $unavailableVariant,
-        VariantInterface $variant
+        ProductVariantInterface $unavailableVariant,
+        ProductVariantInterface $variant
     ) {
         $unavailableVariant->isAvailable()->willReturn(false);
         $variant->isAvailable()->willReturn(true);
@@ -222,25 +210,19 @@ final class ProductSpec extends ObjectBehavior
         $this->hasOptions()->shouldReturn(false);
     }
 
-    function its_hasOptions_should_return_true_only_if_any_options_defined(OptionInterface $option)
+    function its_hasOptions_should_return_true_only_if_any_options_defined(ProductOptionInterface $option)
     {
         $this->addOption($option);
         $this->hasOptions()->shouldReturn(true);
     }
 
-    function its_options_collection_should_be_mutable(Collection $options)
-    {
-        $this->setOptions($options);
-        $this->getOptions()->shouldReturn($options);
-    }
-
-    function it_should_add_option_properly(OptionInterface $option)
+    function it_should_add_option_properly(ProductOptionInterface $option)
     {
         $this->addOption($option);
         $this->hasOption($option)->shouldReturn(true);
     }
 
-    function it_should_remove_option_properly(OptionInterface $option)
+    function it_should_remove_option_properly(ProductOptionInterface $option)
     {
         $this->addOption($option);
         $this->hasOption($option)->shouldReturn(true);
@@ -306,5 +288,39 @@ final class ProductSpec extends ObjectBehavior
         $this->removeAssociation($association);
 
         $this->hasAssociation($association)->shouldReturn(false);
+    }
+
+    function it_is_simple_if_it_has_one_variant_and_no_options(ProductVariantInterface $variant)
+    {
+        $variant->setProduct($this)->shouldBeCalled();
+        $this->addVariant($variant);
+
+        $this->isSimple()->shouldReturn(true);
+        $this->isConfigurable()->shouldReturn(false);
+    }
+
+    function it_is_configurable_if_it_has_at_least_two_variants(
+        ProductVariantInterface $firstVariant,
+        ProductVariantInterface $secondVariant
+    ) {
+        $firstVariant->setProduct($this)->shouldBeCalled();
+        $this->addVariant($firstVariant);
+        $secondVariant->setProduct($this)->shouldBeCalled();
+        $this->addVariant($secondVariant);
+
+        $this->isConfigurable()->shouldReturn(true);
+        $this->isSimple()->shouldReturn(false);
+    }
+
+    function it_is_configurable_if_it_has_one_variant_and_at_least_one_option(
+        ProductOptionInterface $option,
+        ProductVariantInterface $variant
+    ) {
+        $variant->setProduct($this)->shouldBeCalled();
+        $this->addVariant($variant);
+        $this->addOption($option);
+
+        $this->isConfigurable()->shouldReturn(true);
+        $this->isSimple()->shouldReturn(false);
     }
 }

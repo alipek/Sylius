@@ -15,6 +15,7 @@ default:
             screenshot: true
 
         Behat\MinkExtension:
+            files_path: "%paths.base%/src/Sylius/Behat/Resources/fixtures/"
             base_url: "http://localhost:8080/"
             default_session: symfony
             javascript_session: chrome
@@ -50,6 +51,8 @@ default:
         Sylius\Behat\Extension\SymfonyExtension: ~
 
         FriendsOfBehat\PerformanceExtension: ~
+
+        FriendsOfBehat\VariadicExtension: ~
 
     gherkin:
         filters:

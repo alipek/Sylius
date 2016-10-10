@@ -38,6 +38,7 @@ sylius:
             theme: Theme
             hostname: Hostname
         image:
+            code: Code
             file: Image
         locale:
             code: Code
@@ -55,6 +56,7 @@ sylius:
             id: ID
             title: Title
         product:
+            images: Images
             restricted_zone: Restricted zone
             shipping_category: Shipping category
             short_description: Short description
@@ -67,19 +69,6 @@ sylius:
             code: Code
         product_variant:
             tax_category: Tax category
-        settings:
-            general:
-                currency: Default currency
-                locale: Language
-                meta_description: Meta description
-                meta_keywords: Meta keywords
-                title: Page title
-                tracking_code: Tracking code (for example: Google Analytics code)
-            taxation:
-                default_tax_zone: Default tax zone
-                default_tax_calculation_strategy: Default tax calculation strategy
-            security:
-                enabled: Enable?
         shipment_filter:
             created_at_from: From
             created_at_to: To
@@ -95,7 +84,9 @@ sylius:
         shipping_method:
             zone: Zone
         taxon:
+            code: Code
             file: Select image
+            images: Images
         taxonomy:
             file: Select image
         user:
@@ -113,7 +104,6 @@ sylius:
         variant:
             depth: Depth
             height: Height
-            images: Images
             on_hand: Current stock
             price: Price
             original_price: Original price
@@ -144,11 +134,12 @@ sylius:
     email:
         order_confirmation:
             name: Order confirmation
+            content: Your order no. %number% has been successfully placed.<br/><br/>Thank you for shopping at our store!
         order_comment:
             name: Order comment
         shipment_confirmation:
             name: Shipment confirmation
-            content: Your order has been sent.<br/>Thank you for a successful transaction.
+            content: Your order no. %number% has been sent using %method%.<br/>You can check it's location with the "%tracking%" tracking code.<br/><br/>Thank you for a successful transaction.
         user_confirmation:
             name: User confirmation
             subject: Welcome to our store

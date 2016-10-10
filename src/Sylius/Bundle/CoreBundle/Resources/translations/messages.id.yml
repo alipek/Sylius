@@ -26,6 +26,7 @@ sylius:
             currency_default: Mata uang default
             tax_zone_default: Standar Zona Pajak
         image:
+            code: Kode
             file: Gambar
         locale:
             code: Kode
@@ -39,6 +40,7 @@ sylius:
             id: ID
             title: Judul
         product:
+            images: Gambar
             restricted_zone: Zona Terbatas
             shipping_category: Kategori Pengiriman
             short_description: Deskripsi singkat
@@ -49,15 +51,6 @@ sylius:
             code: Kode
         product_variant:
             tax_category: Kategori Pajak
-        settings:
-            general:
-                currency: Mata uang default
-                locale: Bahasa
-                meta_description: Meta Deskripsi
-                meta_keywords: Meta Kata Kunci
-                title: Judul Halaman
-            taxation:
-                default_tax_zone: Standar Zona Pajak
         shipment_filter:
             created_at_from: Dari
             created_at_to: Untuk
@@ -70,7 +63,9 @@ sylius:
         shipping_method:
             zone: Zona
         taxon:
+            code: Kode
             file: Pilih Gambar
+            images: Gambar
         taxonomy:
             file: Pilih Gambar
         user:
@@ -88,7 +83,6 @@ sylius:
         variant:
             depth: Tebal
             height: Tinggi
-            images: Gambar
             on_hand: Stok
             price: Harga
             sku: SKU

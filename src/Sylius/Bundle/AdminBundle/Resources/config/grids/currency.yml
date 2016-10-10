@@ -4,9 +4,11 @@ sylius_grid:
             driver:
                 name: doctrine/orm
                 options:
-                    class: %sylius.model.currency.class%
+                    class: "%sylius.model.currency.class%"
             sorting:
-                code: asc
+                code:
+                    path: code
+                    direction: asc
             fields:
                 code:
                     type: string
@@ -14,7 +16,7 @@ sylius_grid:
                 name:
                     type: string
                     label: sylius.ui.name
-                exchange_rate:
+                exchangeRate:
                     type: string
                     label: sylius.ui.exchange_rate
                 enabled:

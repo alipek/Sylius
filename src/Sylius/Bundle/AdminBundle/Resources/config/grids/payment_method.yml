@@ -4,9 +4,16 @@ sylius_grid:
             driver:
                 name: doctrine/orm
                 options:
-                    class: %sylius.model.payment_method.class%
+                    class: "%sylius.model.payment_method.class%"
                     repository:
                         method: createListQueryBuilder
+                        arguments: ["%locale%"]
+            sorting:
+                code:
+                    path: code
+                    direction: asc
+                name:
+                    path: translation.name
             fields:
                 code:
                     type: string

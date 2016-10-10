@@ -30,6 +30,13 @@ interface SelectPaymentPageInterface extends SymfonyPageInterface
      */
     public function hasPaymentMethod($paymentMethodName);
 
+    /**
+     * @param string $itemName
+     *
+     * @return string
+     */
+    public function getItemSubtotal($itemName);
+
     public function nextStep();
 
     public function changeShippingMethod();
@@ -37,4 +44,14 @@ interface SelectPaymentPageInterface extends SymfonyPageInterface
     public function changeShippingMethodByStepLabel();
 
     public function changeAddressByStepLabel();
+
+    /**
+     * @return bool
+     */
+    public function hasNoAvailablePaymentMethodsWarning();
+
+    /**
+     * @return bool
+     */
+    public function isNextStepButtonUnavailable();
 }

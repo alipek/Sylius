@@ -164,7 +164,7 @@ final class AccountContext implements Context
     }
 
     /**
-     * @Then /^I should be notified that the ([^"]+) is required$/
+     * @Then /^I should be notified that the (email|password|city|street|first name|last name) is required$/
      */
     public function iShouldBeNotifiedThatElementIsRequired($element)
     {
@@ -172,7 +172,7 @@ final class AccountContext implements Context
     }
 
     /**
-     * @Then /^I should be notified that the ([^"]+) is invalid$/
+     * @Then /^I should be notified that the (email) is invalid$/
      */
     public function iShouldBeNotifiedThatElementIsInvalid($element)
     {
@@ -403,6 +403,47 @@ final class AccountContext implements Context
             $this->orderShowPage->getItemPrice(),
             $itemPrice,
             'Item price is %s, but should be %s.'
+        );
+    }
+
+    /**
+     * @When I subscribe to the newsletter
+     */
+    public function iSubscribeToTheNewsletter()
+    {
+        $this->profileUpdatePage->subscribeToTheNewsletter();
+    }
+
+    /**
+     * @Then I should be subscribed to the newsletter
+     */
+    public function iShouldBeSubscribedToTheNewsletter()
+    {
+        Assert::true(
+            $this->profileUpdatePage->isSubscribedToTheNewsletter(),
+            'I should be subscribed to the newsletter, but I am not'
+        );
+    }
+
+    /**
+     * @Then I should see :provinceName as province in the shipping address
+     */
+    public function iShouldSeeAsProvinceInTheShippingAddress($provinceName)
+    {
+        Assert::true(
+            $this->orderShowPage->hasShippingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
+        );
+    }
+
+    /**
+     * @Then I should see :provinceName as province in the billing address
+     */
+    public function iShouldSeeAsProvinceInTheBillingAddress($provinceName)
+    {
+        Assert::true(
+            $this->orderShowPage->hasBillingProvinceName($provinceName),
+            sprintf('Cannot find shipping address with province %s', $provinceName)
         );
     }
 

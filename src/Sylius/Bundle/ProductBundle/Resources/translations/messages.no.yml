@@ -12,9 +12,13 @@ sylius:
             taxons: Taksonomier
         product_variant:
             available_on: Tilgjengelig
-        product_archetype:
-            name: Navn
-            parent: Forelder
-            options: Instillinger
         association_type:
             name: Navn
+        variant:
+            name: Navn
+        option:
+            name: Navn
+            values: Mulige verdier
+        option_value:
+            add_value: Legg til verdi
+            value: Verdi

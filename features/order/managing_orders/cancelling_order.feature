@@ -5,13 +5,13 @@ Feature: Cancelling orders
     I want to be able to cancel an order
 
     Background:
-        Given the store operates on a single channel in "France"
+        Given the store operates on a single channel in "United States"
         And the store has a product "PHP T-Shirt"
         And the store ships everywhere for free
         And the store allows paying with "Cash on Delivery"
         And there is a customer "john.doe@gmail.com" that placed an order "#00000022"
         And the customer bought a single "PHP T-Shirt"
-        And the customer chose "Free" shipping method to "France" with "Cash on Delivery" payment
+        And the customer chose "Free" shipping method to "United States" with "Cash on Delivery" payment
         And I am logged in as an administrator
 
     @ui
@@ -26,12 +26,12 @@ Feature: Cancelling orders
 
     @ui
     Scenario: Cannot cancel an order, which is already cancelled
-        Given the customer canceled this order
+        Given the customer cancelled this order
         When I view the summary of the order "#00000022"
         Then I should not be able to cancel this order
 
     @ui
     Scenario: Checking order payment state of a cancelled order
-        Given this order was canceled
+        Given this order was cancelled
         When I browse orders
         Then this order should have order payment state "Cancelled"

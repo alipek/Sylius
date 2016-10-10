@@ -12,9 +12,13 @@ sylius:
             taxons: Taksoni
         product_variant:
             available_on: Dostupno
-        product_archetype:
-            name: Naziv grupe
-            parent: Nadređena kategorija
-            options: Opcije
         association_type:
             name: Naziv grupe
+        variant:
+            name: Naziv grupe
+        option:
+            name: Naziv grupe
+            values: Moguće vrijednosti
+        option_value:
+            add_value: Dodaj vrijednost
+            value: Vrijednost

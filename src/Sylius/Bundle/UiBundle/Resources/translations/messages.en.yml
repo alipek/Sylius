@@ -7,6 +7,8 @@ sylius:
         option:
             name: Name
         notes: Extra notes
+        variant:
+            tracked: Tracked
     ui:
         abandoned: Abandoned
         about: About
@@ -52,8 +54,6 @@ sylius:
         an_error_occurred: An error occurred
         api: Api
         apply_coupon: Apply coupon
-        archetype: Archetype
-        archetypes: Archetypes
         are_your_sure_you_want_to_perform_this_action: Are you sure you want to perform this action?
         association: Association
         association_types: 'Association types'
@@ -79,7 +79,6 @@ sylius:
         body: Body
         browse_products: 'Browse products'
         build: Build
-        building_product_from_archetype: 'Building product from archetype'
         calculator: Calculator
         cancel: Cancel
         cancelled: Cancelled
@@ -90,6 +89,7 @@ sylius:
         category: Category
         category_requirements: Category requirements
         change_address: Change address
+        change_file: Change file
         change_password: Change password
         change_payment_method: Change payment method
         change_shipping_method: Change shipping method
@@ -116,10 +116,6 @@ sylius:
         confirmation: Confirmation
         confirmation_title: Confirmation
         confirmed: Confirmed
-        contact_request_details: 'Contact request details'
-        contact_request_show: 'Contact request'
-        contact_requests: 'Contact requests'
-        contact_topics: 'Contact topics'
         contact_us: Contact us
         contain_variants: 'Contain Variants'
         contains: Contains
@@ -134,10 +130,7 @@ sylius:
         create_a_new_address: 'Create a new address'
         create_a_new_customer_account: Create a new customer account
         create_an_account: Create an account
-        create_archetype: 'Create archetype'
         create_association_type: 'Create Association type'
-        create_contact_request: 'Create contact request'
-        create_contact_topic: 'Create contact topic'
         create_country: 'Create country'
         create_currency: 'Create currency'
         create_customer: 'Create customer'
@@ -224,6 +217,7 @@ sylius:
         discount: Discount
         discounted_unit_price: 'Discounted unit price'
         edit: Edit
+        edit_admin_user: 'Edit administrator'
         edit_association_type: 'Edit Association type'
         edit_channel: Edit channel
         edit_country: Edit country
@@ -242,6 +236,7 @@ sylius:
         edit_promotion_coupon: Edit promotion coupon
         edit_report: 'Edit report'
         edit_route: 'Edit route'
+        edit_shipping_address: Edit shipping address
         edit_shipping_method: Edit shipping method
         edit_static_content: 'Edit static content'
         edit_tax_category: Edit tax category
@@ -250,11 +245,8 @@ sylius:
         edit_your_items_apply_coupon_or_proceed_to_the_checkout: Edit your items, apply coupon or proceed to the checkout
         edit_your_personal_information: 'Edit your personal information'
         edit_zone: Edit zone
-        editing_archetype: 'Editing archetype'
         editing_attribute: 'Editing attribute'
         editing_channel: 'Editing channel'
-        editing_contact_request: 'Editing contact request'
-        editing_contact_topic: 'Editing contact topic'
         editing_country: 'Editing country'
         editing_coupon: 'Editing coupon'
         editing_currency: 'Editing currency'
@@ -370,6 +362,7 @@ sylius:
         links: Links
         list_coupons: List coupons
         list_variants: List variants
+        locale: Locale
         locales: Locales
         lock: Lock
         locked: Locked
@@ -434,11 +427,8 @@ sylius:
         name: Name
         new: New
         new_admin_user: 'New administrator'
-        new_archetype: 'New archetype'
         new_channel: New channel
         new_comment_posted_on_order: 'New comment posted on order'
-        new_contact_request: 'New contact request'
-        new_contact_topic: 'New contact topic'
         new_country: 'New country'
         new_coupon: New coupon
         new_currency: 'New currency'
@@ -470,7 +460,7 @@ sylius:
         new_zone: 'New zone'
         newest_products: 'Newest products'
         next: Next
-        no: No
+        no_label: 'No'
         no_account: 'No account yet'
         no_account: no account
         no_association_types_to_display: 'There are no association types defined'
@@ -497,6 +487,7 @@ sylius:
         not_empty: Not empty
         not_in: Not in
         not_verified: Not verified
+        not_tracked: Not tracked
         notes: Notes
         notify_customer: 'Notify Customer'
         number: Number
@@ -557,7 +548,6 @@ sylius:
         process_your_orders: Process your orders
         processing: Processing
         product: Product
-        product_archetypes: 'Product archetypes'
         product_association_index: Association
         product_association_type_index: 'Association type'
         product_association_types: 'Product association types'
@@ -576,6 +566,7 @@ sylius:
         promotion_configuration: Promotion configuration
         promotion_coupons: Coupons
         promotion_details: 'Promotion details'
+        promotion_discount: Promotion discount
         promotion_information: Promotion information
         promotion_total: 'Promotion total'
         promotions: Promotions
@@ -660,6 +651,7 @@ sylius:
         show_deleted: 'Show deleted'
         show_in_store: 'Show in store'
         show_metadata: 'Show metadata'
+        show_order_details: 'Show order details'
         sign_in: Sign in
         sign_in_here: Sign in here
         sign_in_to_the_store_or_create_new_account: 'Sign in to the store <small>or create new account</small>'
@@ -678,6 +670,7 @@ sylius:
         street: Street
         string_blocks: 'String blocks'
         subject: Subject
+        subscribed_to_newsletter: Subscribe to the newsletter
         subtotal: Subtotal
         success: Success
         summary: Summary
@@ -698,12 +691,9 @@ sylius:
         thank_you: Thank you!
         thank_you_for_your_order: 'Thank you for your order'
         theme: Theme
-        there_are_no_archetypes_defined: 'There are no archetypes defined'
         there_are_no_attributes_configured: 'There are no attributes configured'
         there_are_no_blocks_to_display: 'There are no blocks to display'
         there_are_no_channels_configured: 'There are no channels configured'
-        there_are_no_contact_requests_to_display: 'There are no contact requests to display'
-        there_are_no_contact_topics_to_display: 'There are no contact topics to display'
         there_are_no_countries_configured: 'There are no countries configured'
         there_are_no_coupon_to_display: 'There are no coupon to display'
         there_are_no_currencies_to_display: 'There are no currencies to display'
@@ -786,7 +776,7 @@ sylius:
         welcome: Welcome
         welcome_to_our_store: 'Welcome to our store'
         welcome_to_your_space: 'Welcome to your space'
-        yes: Yes
+        yes_label: 'Yes'
         you_are_customer_since: 'You are customer since'
         you_have_no_addresses_defined: 'You have no addresses defined'
         you_have_no_new_orders: 'You have no new orders'

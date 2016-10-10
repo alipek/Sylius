@@ -4,11 +4,16 @@ sylius_grid:
             driver:
                 name: doctrine/orm
                 options:
-                    class: %sylius.model.product.class%
+                    class: "%sylius.model.product.class%"
                     repository:
                         method: createListQueryBuilder
+                        arguments: ["%locale%"]
             sorting:
-                code: asc
+                code:
+                    path: code
+                    direction: asc
+                name:
+                    path: translation.name
             fields:
                 image:
                     type: twig

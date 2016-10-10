@@ -11,8 +11,6 @@
 
 namespace Sylius\Component\Core\Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Sylius\Component\Rbac\Model\RoleInterface;
 use Sylius\Component\User\Model\User;
 
 /**
@@ -20,11 +18,6 @@ use Sylius\Component\User\Model\User;
  */
 class AdminUser extends User implements AdminUserInterface
 {
-    /**
-     * @var ArrayCollection
-     */
-    protected $authorizationRoles;
-
     /**
      * @var string
      */
@@ -36,65 +29,18 @@ class AdminUser extends User implements AdminUserInterface
     protected $lastName;
 
     /**
-     * @var array
+     * @var string
      */
-    protected $roles = [AdminUserInterface::DEFAULT_ADMIN_ROLE];
+    protected $localeCode;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct()
     {
         parent::__construct();
 
-        $this->authorizationRoles = new ArrayCollection();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthorizationRoles()
-    {
-        return $this->authorizationRoles;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addAuthorizationRole(RoleInterface $role)
-    {
-        if (!$this->hasAuthorizationRole($role)) {
-            $this->authorizationRoles->add($role);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeAuthorizationRole(RoleInterface $role)
-    {
-        if ($this->hasAuthorizationRole($role)) {
-            $this->authorizationRoles->removeElement($role);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasAuthorizationRole(RoleInterface $role)
-    {
-        return $this->authorizationRoles->contains($role);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRoles()
-    {
-        $roles = parent::getRoles();
-
-        foreach ($this->getAuthorizationRoles() as $role) {
-            $roles = array_merge($roles, $role->getSecurityRoles());
-        }
-
-        return $roles;
+        $this->roles = [AdminUserInterface::DEFAULT_ADMIN_ROLE];
     }
 
     /**
@@ -127,5 +73,21 @@ class AdminUser extends User implements AdminUserInterface
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLocaleCode()
+    {
+        return $this->localeCode;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setLocaleCode($code)
+    {
+        $this->localeCode = $code;
     }
 }

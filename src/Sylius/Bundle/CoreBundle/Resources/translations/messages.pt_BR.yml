@@ -35,10 +35,12 @@ sylius:
             currencies: Moedas
             shipping_methods: Métodos de envio
             payment_methods: Meios de pagamentos
+            tax_calculation_strategy: Estratégia de cálculo de impostos
             tax_zone_default: Zona de imposto do padrão
             theme:  Tema
             hostname: Nome do host
         image:
+            code: Código
             file: Imagem
         locale:
             code: Código
@@ -56,6 +58,7 @@ sylius:
             id: ID
             title: Título
         product:
+            images: Imagens
             restricted_zone: Zona restrita
             shipping_category: Categoria de expedição
             short_description: Breve descrição
@@ -68,20 +71,6 @@ sylius:
             code: Código
         product_variant:
             tax_category: Categoria de imposto
-        settings:
-            general:
-                currency: Moeda padrão
-                locale: Língua
-                meta_description: Meta descrição
-                meta_keywords: Meta palavra-chaves
-                title: Título da página
-                tracking_code:
-                    Tracking code (for example: Código do Google Analytics
-            taxation:
-                default_tax_zone: Zona de imposto do padrão
-                default_tax_calculation_strategy: Estratégia de cálculo do imposto de padrão
-            security:
-                enabled: Ativado?
         shipment_filter:
             created_at_from: De
             created_at_to: Para
@@ -97,7 +86,9 @@ sylius:
         shipping_method:
             zone: Zona
         taxon:
+            code: Código
             file: Selecione a imagem
+            images: Imagens
         taxonomy:
             file: Selecione a imagem
         user:
@@ -115,7 +106,6 @@ sylius:
         variant:
             depth: Profundidade
             height: Altura
-            images: Imagens
             on_hand: Estoque atual
             price: Preço
             original_price: Preço original
@@ -145,15 +135,25 @@ sylius:
     email:
         order_confirmation:
             name: Confirmação de compra
+            content: 'Seu pedido no. %number% foi recebido com sucesso.<br/><br/>Obrigado por comprar em nossa loja!'
         order_comment:
             name: Comentários do pedido
         shipment_confirmation:
             name: Confirmação de postagem
-            content: 'Seu pedido foi enviado. <br/> Obrigado pela preferência.'
+            content: 'Seu pedido n º %number% foi enviado usando o %method%. <br/> Você pode verificar a sua localização com o código de rastreamento "%tracking%". <br/> <br/> Obrigado poela preferência.'
         user_confirmation:
             name: Confirmação do usuário
             subject: Bem-vindo à nossa loja
+            content: 'Bem-vindo à nossa loja <br/> <br/> você acaba de ser registrado. <br/> Obrigado %username%.'
         password_reset:
             name: Redefinir a senha
+            content: '<h3>Olá %username%</h3> Para resetar sua senha - por favor, visite %url% <br/> <br/> Atenciosamente, equipe.'
+        verification:
+            name: Verificação de endereço de e-mail
+            content: 'Para verificar o seu endereço de e-mail - por favor, visite %url%'
+    payum_gateway:
+        cash_on_delivery: Pagamento em dinheiro na entrega
+        offline: Desconectado
+        paypal_express_checkout: Pagamento Paypal Express
     shipping_method_resolver:
         by_zones_and_channel: Por zonas e canal

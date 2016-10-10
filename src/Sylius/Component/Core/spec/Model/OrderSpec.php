@@ -25,7 +25,7 @@ use Sylius\Component\Core\OrderCheckoutStates;
 use Sylius\Component\Core\OrderShippingStates;
 use Sylius\Component\Order\Model\Order as BaseOrder;
 use Sylius\Component\Order\Model\OrderInterface;
-use Sylius\Component\Promotion\Model\CouponInterface;
+use Sylius\Component\Promotion\Model\PromotionCouponInterface;
 use Sylius\Component\Customer\Model\CustomerInterface;
 
 /**
@@ -132,6 +132,16 @@ final class OrderSpec extends ObjectBehavior
         $this->removeShipment($shipment);
 
         $this->shouldNotHaveShipment($shipment);
+    }
+
+    function it_removes_shipments(ShipmentInterface $shipment)
+    {
+        $this->addShipment($shipment);
+        $this->hasShipment($shipment)->shouldReturn(true);
+
+        $this->removeShipments();
+
+        $this->hasShipment($shipment)->shouldReturn(false);
     }
 
     function it_should_return_shipping_adjustments(
@@ -250,6 +260,17 @@ final class OrderSpec extends ObjectBehavior
         $this->getExchangeRate()->shouldReturn(1.25);
     }
 
+    function it_has_no_default_locale_code()
+    {
+        $this->getLocaleCode()->shouldReturn(null);
+    }
+
+    function its_locale_code_is_mutable()
+    {
+        $this->setLocaleCode('en');
+        $this->getLocaleCode()->shouldReturn('en');
+    }
+
     function it_has_cart_shipping_state_by_default()
     {
         $this->getShippingState()->shouldReturn(OrderShippingStates::STATE_CART);
@@ -275,7 +296,7 @@ final class OrderSpec extends ObjectBehavior
         $this->shouldNotHavePayment($payment);
     }
 
-    function it_returns_last_payment(PaymentInterface $payment1, PaymentInterface $payment2)
+    function it_returns_last_new_payment(PaymentInterface $payment1, PaymentInterface $payment2)
     {
         $payment1->getState()->willReturn(PaymentInterface::STATE_NEW);
         $payment1->setOrder($this)->shouldBeCalled();
@@ -285,7 +306,38 @@ final class OrderSpec extends ObjectBehavior
         $this->addPayment($payment1);
         $this->addPayment($payment2);
 
-        $this->getLastPayment()->shouldReturn($payment2);
+        $this->getLastNewPayment()->shouldReturn($payment2);
+    }
+
+    function it_returns_last_new_payment_from_payments_in_various_states(
+        PaymentInterface $payment1,
+        PaymentInterface $payment2,
+        PaymentInterface $payment3,
+        PaymentInterface $payment4
+    ) {
+        $payment1->getState()->willReturn(PaymentInterface::STATE_NEW);
+        $payment1->setOrder($this)->shouldBeCalled();
+
+        $payment2->getState()->willReturn(PaymentInterface::STATE_CANCELLED);
+        $payment2->setOrder($this)->shouldBeCalled();
+
+        $payment3->getState()->willReturn(PaymentInterface::STATE_CART);
+        $payment3->setOrder($this)->shouldBeCalled();
+
+        $payment4->getState()->willReturn(PaymentInterface::STATE_FAILED);
+        $payment4->setOrder($this)->shouldBeCalled();
+
+        $this->addPayment($payment1);
+        $this->addPayment($payment2);
+        $this->addPayment($payment3);
+        $this->addPayment($payment4);
+
+        $this->getLastNewPayment()->shouldReturn($payment1);
+    }
+
+    function it_returns_null_if_there_is_no_payments_after_trying_to_get_new_payment()
+    {
+        $this->getLastNewPayment()->shouldReturn(null);
     }
 
     function it_adds_and_removes_shipments(ShipmentInterface $shipment)
@@ -301,7 +353,7 @@ final class OrderSpec extends ObjectBehavior
         $this->shouldNotHaveShipment($shipment);
     }
 
-    function it_has_promotion_coupon(CouponInterface $coupon)
+    function it_has_promotion_coupon(PromotionCouponInterface $coupon)
     {
         $this->setPromotionCoupon($coupon);
         $this->getPromotionCoupon()->shouldReturn($coupon);
@@ -520,5 +572,12 @@ final class OrderSpec extends ObjectBehavior
         $this->addAdjustment($shippingPromotionAdjustment);
 
         $this->getOrderPromotionTotal()->shouldReturn(-400);
+    }
+
+    function it_has_a_token_value()
+    {
+        $this->setTokenValue('xyzasdxqwe');
+
+        $this->getTokenValue()->shouldReturn('xyzasdxqwe');
     }
 }

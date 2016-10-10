@@ -51,4 +51,40 @@ interface UpdateConfigurableProductPageInterface extends UpdatePageInterface
      * @param TaxonInterface $taxon
      */
     public function selectMainTaxon(TaxonInterface $taxon);
+
+    /**
+     * @param string $code
+     *
+     * @return bool
+     */
+    public function isImageWithCodeDisplayed($code);
+
+    /**
+     * @param string $code
+     * @param string $path
+     */
+    public function attachImageWithCode($code, $path);
+
+    /**
+     * @param string $code
+     * @param string $path
+     */
+    public function changeImageWithCode($code, $path);
+
+    /**
+     * @param string $code
+     */
+    public function removeImageWithCode($code);
+
+    public function removeFirstImage();
+
+    /**
+     * @return int
+     */
+    public function countImages();
+
+    /**
+     * @return bool
+     */
+    public function isImageCodeDisabled();
 }

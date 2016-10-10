@@ -11,15 +11,7 @@
                 {{ form_start(form, {'action': path('sylius_shop_checkout_select_payment'), 'attr': {'class': 'ui loadable form', 'novalidate': 'novalidate'}}) }}
                 <input type="hidden" name="_method" value="PUT" />
                 {% include '@SyliusShop/Checkout/SelectPayment/_form.html.twig' %}
-                <div class="ui hidden divider"></div>
-                <div class="ui two column grid">
-                    <div class="column">
-                        <button data-remote-form="sylius_checkout_reselect_shipping" href="#" class="ui large icon labeled button"><i class="arrow left icon"></i> {{ 'sylius.ui.change_shipping_method'|trans }}</button>
-                    </div>
-                    <div class="right aligned column">
-                        <button type="submit" class="ui large primary icon labeled button"><i class="arrow right icon"></i> {{ 'sylius.ui.next'|trans }}</button>
-                    </div>
-                </div>
+
                 {{ form_row(form._token) }}
                 {{ form_end(form, {'render_rest': false}) }}
             </div>

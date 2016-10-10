@@ -16,7 +16,6 @@ use Sylius\Bundle\ProductBundle\Doctrine\ORM\ProductRepository as BaseProductRep
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
-use Sylius\Component\Product\Model\ArchetypeInterface;
 
 /**
  * @author Paweł Jędrzejewski <pawel@sylius.org>
@@ -27,137 +26,14 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
     /**
      * {@inheritdoc}
      */
-    public function createListQueryBuilder()
+    public function createListQueryBuilder($locale)
     {
         return $this->createQueryBuilder('o')
             ->addSelect('translation')
             ->leftJoin('o.translations', 'translation')
+            ->andWhere('translation.locale = :locale')
+            ->setParameter('locale', $locale)
         ;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createByTaxonPaginator(TaxonInterface $taxon, array $criteria = [])
-    {
-        $root = $taxon->isRoot() ? $taxon : $taxon->getRoot();
-
-        $queryBuilder = $this->createQueryBuilder('o');
-        $queryBuilder
-            ->innerJoin('o.taxons', 'taxon')
-            ->andWhere($queryBuilder->expr()->eq('taxon.root', ':root'))
-            ->andWhere($queryBuilder->expr()->orX(
-                'taxon = :taxon',
-                ':left < taxon.left AND taxon.right < :right'
-            ))
-            ->setParameter('root', $root)
-            ->setParameter('taxon', $taxon)
-            ->setParameter('left', $taxon->getLeft())
-            ->setParameter('right', $taxon->getRight())
-        ;
-
-        $this->applyCriteria($queryBuilder, $criteria);
-
-        return $this->getPaginator($queryBuilder);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createByProductArchetypePaginator(ArchetypeInterface $archetype, array $criteria = [])
-    {
-        $queryBuilder = $this->createQueryBuilder('o');
-        $queryBuilder
-            ->innerJoin('o.archetype', 'archetype')
-            ->addSelect('archetype')
-            ->andWhere('archetype = :archetype')
-            ->setParameter('archetype', $archetype)
-        ;
-
-        $this->applyCriteria($queryBuilder, $criteria);
-
-        return $this->getPaginator($queryBuilder);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createByTaxonAndChannelPaginator(TaxonInterface $taxon, ChannelInterface $channel)
-    {
-        $queryBuilder = $this->createQueryBuilder('o')
-            ->innerJoin('o.taxons', 'taxon')
-            ->innerJoin('o.channels', 'channel')
-            ->andWhere('taxon = :taxon')
-            ->andWhere('channel = :channel')
-            ->setParameter('channel', $channel)
-            ->setParameter('taxon', $taxon)
-        ;
-
-        return $this->getPaginator($queryBuilder);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createFilterPaginator(array $criteria = null, array $sorting = null)
-    {
-        $queryBuilder = $this->createQueryBuilder('o')
-            ->addSelect('translation')
-            ->leftJoin('o.translations', 'translation')
-            ->addSelect('variant')
-            ->leftJoin('o.variants', 'variant')
-            ->addSelect('archetype')
-            ->leftJoin('o.archetype', 'archetype')
-            ->leftJoin('archetype.translations', 'archetype_translation')
-        ;
-
-        if (!empty($criteria['name'])) {
-            $queryBuilder
-                ->andWhere('translation.name LIKE :name')
-                ->setParameter('name', '%'.$criteria['name'].'%')
-            ;
-        }
-        if (!empty($criteria['code'])) {
-            $queryBuilder
-                ->andWhere('variant.code = :code')
-                ->setParameter('code', $criteria['code'])
-            ;
-        }
-
-        if (empty($sorting)) {
-            if (!is_array($sorting)) {
-                $sorting = [];
-            }
-            $sorting['updatedAt'] = 'desc';
-        }
-
-        $this->applySorting($queryBuilder, $sorting);
-
-        return $this->getPaginator($queryBuilder);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findForDetailsPage($id)
-    {
-        $queryBuilder = $this->createQueryBuilder('o');
-        $queryBuilder
-            ->select('o, option, variant')
-            ->leftJoin('o.options', 'option')
-            ->leftJoin('o.variants', 'variant')
-            ->leftJoin('variant.images', 'image')
-            ->addSelect('image')
-            ->andWhere($queryBuilder->expr()->eq('o.id', ':id'))
-            ->setParameter('id', $id)
-        ;
-
-        $result = $queryBuilder
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-
-        return $result;
     }
 
     /**
@@ -222,7 +98,7 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
             ->setParameter('code', $code)
             ->setParameter('channel', $channel)
             ->getQuery()
-            ->getResult();
+            ->getResult()
         ;
     }
 
@@ -240,7 +116,7 @@ class ProductRepository extends BaseProductRepository implements ProductReposito
             ->setParameter('slug', $slug)
             ->setParameter('channel', $channel)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult()
         ;
     }
 

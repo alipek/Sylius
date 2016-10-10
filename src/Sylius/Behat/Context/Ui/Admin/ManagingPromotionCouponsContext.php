@@ -19,7 +19,7 @@ use Sylius\Behat\Page\Admin\PromotionCoupon\GeneratePageInterface;
 use Sylius\Behat\Page\Admin\PromotionCoupon\UpdatePageInterface;
 use Sylius\Behat\Service\Resolver\CurrentPageResolverInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
-use Sylius\Component\Core\Model\CouponInterface;
+use Sylius\Component\Core\Model\PromotionCouponInterface;
 use Sylius\Component\Promotion\Model\PromotionInterface;
 use Webmozart\Assert\Assert;
 
@@ -102,7 +102,7 @@ final class ManagingPromotionCouponsContext implements Context
     /**
      * @Given /^I want to modify the ("[^"]+" coupon) for (this promotion)$/
      */
-    public function iWantToModifyTheCoupon(CouponInterface $coupon, PromotionInterface $promotion)
+    public function iWantToModifyTheCoupon(PromotionCouponInterface $coupon, PromotionInterface $promotion)
     {
         $this->updatePage->open(['id' => $coupon->getId(), 'promotionId' => $promotion->getId()]);
     }
@@ -236,7 +236,7 @@ final class ManagingPromotionCouponsContext implements Context
      * @When /^I delete ("[^"]+" coupon) related to (this promotion)$/
      * @When /^I try to delete ("[^"]+" coupon) related to (this promotion)$/
      */
-    public function iDeleteCouponRelatedToThisPromotion(CouponInterface $coupon, PromotionInterface $promotion)
+    public function iDeleteCouponRelatedToThisPromotion(PromotionCouponInterface $coupon, PromotionInterface $promotion)
     {
         $this->indexPage->open(['promotionId' => $promotion->getId()]);
         $this->indexPage->deleteResourceOnPage(['code' => $coupon->getCode()]);
@@ -273,7 +273,7 @@ final class ManagingPromotionCouponsContext implements Context
     public function thisCouponShouldBeValidUntil(\DateTime $date)
     {
         Assert::true(
-            $this->indexPage->isSingleResourceOnPage(['Expires at' => date('d-m-Y', $date->getTimestamp())]),
+            $this->indexPage->isSingleResourceOnPage(['expiresAt' => date('d-m-Y', $date->getTimestamp())]),
             sprintf('There should be coupon with expires date %s', date('d-m-Y', $date->getTimestamp()))
         );
     }
@@ -284,7 +284,7 @@ final class ManagingPromotionCouponsContext implements Context
     public function thisCouponShouldHaveUsageLimit($limit)
     {
         Assert::true(
-            $this->indexPage->isSingleResourceOnPage(['Usage limit' => $limit]),
+            $this->indexPage->isSingleResourceOnPage(['usageLimit' => $limit]),
             sprintf('There should be coupon with %s usage limit', $limit)
         );
     }
@@ -295,7 +295,7 @@ final class ManagingPromotionCouponsContext implements Context
     public function thisCouponShouldHavePerCustomerUsageLimit($limit)
     {
         Assert::true(
-            $this->indexPage->isSingleResourceOnPage(['Per customer usage limit' => $limit]),
+            $this->indexPage->isSingleResourceOnPage(['perCustomerUsageLimit' => $limit]),
             sprintf('There should be coupon with %s per customer usage limit', $limit)
         );
     }
@@ -382,7 +382,7 @@ final class ManagingPromotionCouponsContext implements Context
     /**
      * @Then /^(this coupon) should no longer exist in the coupon registry$/
      */
-    public function couponShouldNotExistInTheRegistry(CouponInterface $coupon)
+    public function couponShouldNotExistInTheRegistry(PromotionCouponInterface $coupon)
     {
         Assert::false(
             $this->indexPage->isSingleResourceOnPage(['code' => $coupon->getCode()]),
@@ -412,7 +412,7 @@ final class ManagingPromotionCouponsContext implements Context
     /**
      * @Then /^(this coupon) should still exist in the registry$/
      */
-    public function couponShouldStillExistInTheRegistry(CouponInterface $coupon)
+    public function couponShouldStillExistInTheRegistry(PromotionCouponInterface $coupon)
     {
         Assert::true(
             $this->indexPage->isSingleResourceOnPage(['code' => $coupon->getCode()]),

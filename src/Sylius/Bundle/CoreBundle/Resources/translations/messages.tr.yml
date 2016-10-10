@@ -36,6 +36,7 @@ sylius:
             payment_methods: Ödeme Yöntemleri
             tax_zone_default: Varsayılan vergi bölgesi
         image:
+            code: Kod
             file: Resim
         locale:
             code: Kod
@@ -53,6 +54,7 @@ sylius:
             id: ID
             title: Başlık
         product:
+            images: Resimleri
             restricted_zone: Kısıtlı bölge
             shipping_category: Teslimat kategorisi
             short_description: Kısa açıklama
@@ -64,19 +66,6 @@ sylius:
             code: Kod
         product_variant:
             tax_category: Vergi kategorisi
-        settings:
-            general:
-                currency: Varsayılan para birimi
-                locale: Dil
-                meta_description: Meta açıklama
-                meta_keywords: Meta anahtar kelimeleri
-                title: Sayfa başlığı
-                tracking_code:
-                    Tracking code (for example: Google Analytics kodu)
-            taxation:
-                default_tax_zone: Varsayılan vergi bölgesi
-            security:
-                enabled: Etkinleştir?
         shipment_filter:
             created_at_from: Kaynak
             created_at_to: Hedef
@@ -92,7 +81,9 @@ sylius:
         shipping_method:
             zone: Bölge
         taxon:
+            code: Kod
             file: Resim seç
+            images: Resimleri
         taxonomy:
             file: Resim seç
         user:
@@ -110,7 +101,6 @@ sylius:
         variant:
             depth: Derinliği
             height: Yüksekliği
-            images: Resimleri
             on_hand: Mevcut stok
             price: Fiyatı
             sku: Stok Kodu

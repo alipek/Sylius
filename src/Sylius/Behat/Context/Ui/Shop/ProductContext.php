@@ -76,6 +76,7 @@ final class ProductContext implements Context
 
     /**
      * @When /^I check (this product)'s details/
+     * @When I view product :product
      */
     public function iOpenProductPage(ProductInterface $product)
     {
@@ -104,6 +105,7 @@ final class ProductContext implements Context
 
     /**
      * @Then I should be on :product product detailed page
+     * @Then I should still be on product :product page
      */
     public function iShouldBeOnProductDetailedPage(ProductInterface $product)
     {
@@ -188,6 +190,7 @@ final class ProductContext implements Context
     }
 
     /**
+     * @Then the product price should be :price
      * @Then I should see the product price :price
      */
     public function iShouldSeeTheProductPrice($price)
@@ -200,6 +203,22 @@ final class ProductContext implements Context
     }
 
     /**
+     * @When I set its :optionName to :optionValue
+     */
+    public function iSetItsOptionTo($optionName, $optionValue)
+    {
+        $this->showPage->selectOption($optionName, $optionValue);
+    }
+
+    /**
+     * @When I select :variantName variant
+     */
+    public function iSelectVariant($variantName)
+    {
+        $this->showPage->selectVariant($variantName);
+    }
+
+    /**
      * @Then I should see the product :productName with price :productPrice
      */
     public function iShouldSeeTheProductWithPrice($productName, $productPrice)
@@ -207,6 +226,41 @@ final class ProductContext implements Context
         Assert::true(
             $this->taxonShowPage->isProductWithPriceOnList($productName, $productPrice),
             sprintf("The product %s with price %s should appear on page, but it does not.", $productName, $productPrice)
+        );
+    }
+
+    /**
+     * @Then /^I should be notified that (this product) does not have sufficient stock$/
+     */
+    public function iShouldBeNotifiedThatThisProductDoesNotHaveSufficientStock(ProductInterface $product)
+    {
+       $this->showPage->waitForValidationErrors(3);
+
+        Assert::true(
+            $this->showPage->hasProductOutOfStockValidationMessage($product),
+            sprintf('I should see validation message for %s product', $product->getName())
+        );
+    }
+
+    /**
+     * @Then /^I should not be notified that (this product) does not have sufficient stock$/
+     */
+    public function iShouldNotBeNotifiedThatThisProductDoesNotHaveSufficientStock(ProductInterface $product)
+    {
+        Assert::false(
+            $this->showPage->hasProductOutOfStockValidationMessage($product),
+            sprintf('I should see validation message for %s product', $product->getName())
+        );
+    }
+
+    /**
+     * @Then I should see a main image
+     */
+    public function iShouldSeeAMainImage()
+    {
+        Assert::true(
+            $this->showPage->isMainImageDisplayed(),
+            'The main image should have been displayed.'
         );
     }
 }

@@ -14,9 +14,12 @@ namespace Sylius\Behat\Page\Shop\Checkout;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Mink\Session;
 use Sylius\Behat\Page\SymfonyPage;
 use Sylius\Component\Core\Model\AddressInterface;
+use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Symfony\Component\Intl\Intl;
+use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -79,12 +82,12 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
     {
         $foundElement = $this->getFieldElement($element);
         if (null === $foundElement) {
-            throw new ElementNotFoundException($this->getSession(), 'Validation message', 'css', '.pointing');
+            throw new ElementNotFoundException($this->getSession(), 'Validation message', 'css', '.sylius-validation-error');
         }
 
-        $validationMessage = $foundElement->find('css', '.pointing');
+        $validationMessage = $foundElement->find('css', '.sylius-validation-error');
         if (null === $validationMessage) {
-            throw new ElementNotFoundException($this->getSession(), 'Validation message', 'css', '.pointing');
+            throw new ElementNotFoundException($this->getSession(), 'Validation message', 'css', '.sylius-validation-error');
         }
 
         return $message === $validationMessage->getText();
@@ -98,17 +101,22 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
         $this->getElement('shipping_first_name')->setValue($shippingAddress->getFirstName());
         $this->getElement('shipping_last_name')->setValue($shippingAddress->getLastName());
         $this->getElement('shipping_street')->setValue($shippingAddress->getStreet());
-        $this->getElement('shipping_country')->selectOption($this->getCountryNameOrDefault($shippingAddress->getCountryCode()));
+        $this->getElement('shipping_country')->selectOption($shippingAddress->getCountryCode() ?: 'Select');
         $this->getElement('shipping_city')->setValue($shippingAddress->getCity());
         $this->getElement('shipping_postcode')->setValue($shippingAddress->getPostcode());
+
+        if (null !== $shippingAddress->getProvinceName()) {
+            $this->waitForElement(5, 'shipping_province');
+            $this->getElement('shipping_province')->setValue($shippingAddress->getProvinceName());
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function specifyShippingAddressProvince($province)
+    public function selectShippingAddressProvince($province)
     {
-        $this->waitForShippingProvinceSelector();
+        $this->waitForElement(5, 'shipping_country_province');
         $this->getElement('shipping_country_province')->selectOption($province);
     }
 
@@ -120,17 +128,22 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
         $this->getElement('billing_first_name')->setValue($billingAddress->getFirstName());
         $this->getElement('billing_last_name')->setValue($billingAddress->getLastName());
         $this->getElement('billing_street')->setValue($billingAddress->getStreet());
-        $this->getElement('billing_country')->selectOption($this->getCountryNameOrDefault($billingAddress->getCountryCode()));
+        $this->getElement('billing_country')->selectOption($billingAddress->getCountryCode() ?: 'Select');
         $this->getElement('billing_city')->setValue($billingAddress->getCity());
         $this->getElement('billing_postcode')->setValue($billingAddress->getPostcode());
+
+        if (null !== $billingAddress->getProvinceName()) {
+            $this->waitForElement(5, 'billing_province');
+            $this->getElement('billing_province')->setValue($billingAddress->getProvinceName());
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function specifyBillingAddressProvince($province)
+    public function selectBillingAddressProvince($province)
     {
-        $this->waitForBillingProvinceSelector();
+        $this->waitForElement(5, 'billing_country_province');
         $this->getElement('billing_country_province')->selectOption($province);
     }
 
@@ -147,7 +160,7 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
      */
     public function canSignIn()
     {
-        return $this->isSignInActionAvailable();
+        return $this->waitForElement(5, 'login_button');
     }
 
     /**
@@ -155,7 +168,7 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
      */
     public function signIn()
     {
-        $this->isSignInActionAvailable();
+        $this->waitForElement(5, 'login_button');
         try {
             $this->getElement('login_button')->press();
         } catch (ElementNotFoundException $elementNotFoundException) {
@@ -177,14 +190,68 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
         $this->getElement('login_password')->setValue($password);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getItemSubtotal($itemName)
+    {
+        $itemSlug = strtolower(str_replace('\"', '', str_replace(' ', '-', $itemName)));
+
+        $subtotalTable = $this->getElement('checkout_subtotal');
+
+        return $subtotalTable->find('css', sprintf('#item-%s-subtotal', $itemSlug))->getText();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getShippingAddressCountry()
+    {
+        return $this->getElement('shipping_country')->find('css', 'option:selected')->getText();
+    }
+
     public function nextStep()
     {
-        $this->getDocument()->pressButton('Next');
+        $this->getElement('next_step')->press();
     }
 
     public function backToStore()
     {
         $this->getDocument()->clickLink('Back to store');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function specifyBillingAddressProvince($provinceName)
+    {
+        $this->waitForElement(5, 'billing_province');
+        $this->getElement('billing_province')->setValue($provinceName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function specifyShippingAddressProvince($provinceName)
+    {
+        $this->waitForElement(5, 'shipping_province');
+        $this->getElement('shipping_province')->setValue($provinceName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasShippingAddressInput()
+    {
+        return $this->waitForElement(5, 'shipping_province');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasBillingAddressInput()
+    {
+        return $this->waitForElement(5, 'billing_province');
     }
 
     /**
@@ -196,35 +263,27 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
             'billing_first_name' => '#sylius_checkout_address_billingAddress_firstName',
             'billing_last_name' => '#sylius_checkout_address_billingAddress_lastName',
             'billing_street' => '#sylius_checkout_address_billingAddress_street',
+            'billing_city' => '#sylius_checkout_address_billingAddress_city',
             'billing_country' => '#sylius_checkout_address_billingAddress_countryCode',
             'billing_country_province' => '[name="sylius_checkout_address[billingAddress][provinceCode]"]',
-            'billing_city' => '#sylius_checkout_address_billingAddress_city',
             'billing_postcode' => '#sylius_checkout_address_billingAddress_postcode',
+            'billing_province' => '[name="sylius_checkout_address[billingAddress][provinceName]"]',
+            'checkout_subtotal' => '#checkout-subtotal',
             'customer_email' => '#sylius_checkout_address_customer_email',
             'different_billing_address' => '#sylius_checkout_address_differentBillingAddress',
             'different_billing_address_label' => '#sylius_checkout_address_differentBillingAddress ~ label',
-            'shipping_first_name' => '#sylius_checkout_address_shippingAddress_firstName',
-            'shipping_last_name' => '#sylius_checkout_address_shippingAddress_lastName',
-            'shipping_street' => '#sylius_checkout_address_shippingAddress_street',
+            'login_button' => '#sylius-api-login-submit',
+            'login_password' => 'input[type=\'password\']',
+            'next_step' => '#next-step',
+            'shipping_city' => '#sylius_checkout_address_shippingAddress_city',
             'shipping_country' => '#sylius_checkout_address_shippingAddress_countryCode',
             'shipping_country_province' => '[name="sylius_checkout_address[shippingAddress][provinceCode]"]',
-            'shipping_city' => '#sylius_checkout_address_shippingAddress_city',
+            'shipping_first_name' => '#sylius_checkout_address_shippingAddress_firstName',
+            'shipping_last_name' => '#sylius_checkout_address_shippingAddress_lastName',
             'shipping_postcode' => '#sylius_checkout_address_shippingAddress_postcode',
-            'login_password' => 'input[type=\'password\']',
-            'login_button' => '#sylius-api-login-submit',
+            'shipping_province' => '[name="sylius_checkout_address[shippingAddress][provinceName]"]',
+            'shipping_street' => '#sylius_checkout_address_shippingAddress_street',
         ]);
-    }
-
-    /**
-     * @param string|null $code
-     * 
-     * @return string
-     */
-    private function getCountryNameOrDefault($code)
-    {
-        $countryName = null === $code ? 'Select' : Intl::getRegionBundle()->getCountryNames('en')[$code];
-
-        return $countryName;
     }
 
     /**
@@ -247,13 +306,6 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
     /**
      * @return bool
      */
-    private function isSignInActionAvailable()
-    {
-        return $this->getDocument()->waitFor(5, function () {
-            return $this->hasElement('login_button');
-        });
-    }
-
     private function waitForLoginAction()
     {
         $this->getDocument()->waitFor(5, function () {
@@ -261,17 +313,13 @@ class AddressPage extends SymfonyPage implements AddressPageInterface
         });
     }
 
-    private function waitForShippingProvinceSelector()
+    /**
+     * @return bool
+     */
+    private function waitForElement($timeout, $elementName)
     {
-        return $this->getDocument()->waitFor(5, function () {
-            return $this->hasElement('shipping_country_province');
-        });
-    }
-
-    private function waitForBillingProvinceSelector()
-    {
-        return $this->getDocument()->waitFor(5, function () {
-            return $this->hasElement('billing_country_province');
+        return $this->getDocument()->waitFor($timeout, function () use ($elementName){
+            return $this->hasElement($elementName);
         });
     }
 }

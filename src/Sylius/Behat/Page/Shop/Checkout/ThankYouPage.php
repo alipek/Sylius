@@ -40,41 +40,11 @@ class ThankYouPage extends SymfonyPage implements ThankYouPageInterface
     /**
      * {@inheritdoc}
      */
-    public function hasPayAction()
-    {
-        return $this->hasElement('pay_link');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function pay()
-    {
-        $this->getElement('pay_link')->click();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function waitForResponse($timeout, array $parameters = [])
     {
         $this->getDocument()->waitFor($timeout, function () use ($parameters) {
             return $this->isOpen($parameters);
         });
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function choosePaymentMethod($paymentMethodName)
-    {
-        $paymentMethodElement = $this->getElement('payment_method', ['%name%' => $paymentMethodName]);
-        $paymentMethodElement->selectOption($paymentMethodElement->getAttribute('value'));
-    }
-
-    public function saveChanges()
-    {
-        $this->getDocument()->pressButton('Save');
     }
     
     /**
@@ -82,7 +52,7 @@ class ThankYouPage extends SymfonyPage implements ThankYouPageInterface
      */
     public function getRouteName()
     {
-        return 'sylius_shop_checkout_thank_you';
+        return 'sylius_shop_thank_you';
     }
 
     /**
@@ -92,8 +62,6 @@ class ThankYouPage extends SymfonyPage implements ThankYouPageInterface
     {
         return array_merge(parent::getDefinedElements(), [
             'instructions' => '#sylius-payment-method-instructions',
-            'pay_link' => '#sylius-pay-link',
-            'payment_method' => '.item:contains("%name%") input',
             'thank_you' => '#sylius-thank-you',
         ]);
     }

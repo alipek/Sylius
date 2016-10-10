@@ -40,6 +40,7 @@ sylius:
             theme: Téma
             hostname: Hoszt neve
         image:
+            code: Kód
             file: Kép
         locale:
             code: Kód
@@ -57,6 +58,7 @@ sylius:
             id: Azonosító
             title: Cím
         product:
+            images: Képek
             restricted_zone: Tiltott zóna
             shipping_category: Szállítási kategória
             short_description: Rövid leírás
@@ -69,20 +71,6 @@ sylius:
             code: Kód
         product_variant:
             tax_category: ÁFA-kategória
-        settings:
-            general:
-                currency: Alapértelmezett pénznem
-                locale: Nyelv
-                meta_description: Meta leírás
-                meta_keywords: Meta kulcsszavak
-                title: Oldal címe
-                tracking_code:
-                    Tracking code (for example: A Google Analytics kód)
-            taxation:
-                default_tax_zone: Alapértelmezett adósáv
-                default_tax_calculation_strategy: Alapértelmezett adó számítási stratégia
-            security:
-                enabled: Engedélyezve?
         shipment_filter:
             created_at_from: -tól
             created_at_to: -ig
@@ -98,7 +86,9 @@ sylius:
         shipping_method:
             zone: Zóna
         taxon:
+            code: Kód
             file: Kép kiválasztása
+            images: Képek
         taxonomy:
             file: Kép kiválasztása
         user:
@@ -116,7 +106,6 @@ sylius:
         variant:
             depth: Mélység
             height: Magasság
-            images: Képek
             on_hand: Aktuális készlet
             price: Ár
             original_price: Eredeti ár
@@ -150,7 +139,6 @@ sylius:
             name: Rendelés megjegyzés
         shipment_confirmation:
             name: Szállítási mód megerősítése
-            content: 'Megrendelésedet elküldtük.<br/> A vásárlás sikeresen befejeződött.'
         user_confirmation:
             name: Felhasználói megerősítés
             subject: Üdvözöljük áruházunkban

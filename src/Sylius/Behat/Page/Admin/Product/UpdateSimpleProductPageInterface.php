@@ -11,6 +11,7 @@
 
 namespace Sylius\Behat\Page\Admin\Product;
 
+use Behat\Mink\Exception\ElementNotFoundException;
 use Sylius\Behat\Page\Admin\Crud\UpdatePageInterface as BaseUpdatePageInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
 
@@ -60,4 +61,56 @@ interface UpdateSimpleProductPageInterface extends BaseUpdatePageInterface
      * @param TaxonInterface $taxon
      */
     public function selectMainTaxon(TaxonInterface $taxon);
+
+    public function disableTracking();
+
+    public function enableTracking();
+
+    /**
+     * @return bool
+     */
+    public function isTracked();
+
+    /**
+     * @param string $code
+     *
+     * @return bool
+     */
+    public function isImageWithCodeDisplayed($code);
+
+    /**
+     * @param string $code
+     * @param string $path
+     */
+    public function attachImageWithCode($code, $path);
+
+    /**
+     * @param string $code
+     * @param string $path
+     */
+    public function changeImageWithCode($code, $path);
+
+    /**
+     * @param string $code
+     */
+    public function removeImageWithCode($code);
+
+    public function removeFirstImage();
+
+    /**
+     * @return int
+     */
+    public function countImages();
+
+    /**
+     * @return bool
+     */
+    public function isImageCodeDisabled();
+
+    /**
+     * @return string
+     *
+     * @throws ElementNotFoundException
+     */
+    public function getValidationMessageForImage();
 }

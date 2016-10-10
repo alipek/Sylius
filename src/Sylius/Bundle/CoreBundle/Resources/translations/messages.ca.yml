@@ -26,6 +26,7 @@ sylius:
             currency_default: Moneda predeterminada
             tax_zone_default: "Zona d'impostos per defecte"
         image:
+            code: Codi
             file: Imatge
         locale:
             code: Codi
@@ -40,6 +41,7 @@ sylius:
             id: ID
             title: Títol
         product:
+            images: Imatges
             restricted_zone: Àrea restringida
             shipping_category: "Categoria d'enviament"
             short_description: Descripció breu
@@ -50,15 +52,6 @@ sylius:
             code: Codi
         product_variant:
             tax_category: "Categoria d'impost"
-        settings:
-            general:
-                currency: Moneda predeterminada
-                locale: Llengua
-                meta_description: Metadescripció
-                meta_keywords: Meta keywords
-                title: Títol de pàgina
-            taxation:
-                default_tax_zone: "Zona d'impostos per defecte"
         shipment_filter:
             created_at_from: Des de
             created_at_to: A
@@ -71,7 +64,9 @@ sylius:
         shipping_method:
             zone: Zona
         taxon:
+            code: Codi
             file: Seleccioneu la imatge
+            images: Imatges
         taxonomy:
             file: Seleccioneu la imatge
         user:
@@ -89,7 +84,6 @@ sylius:
         variant:
             depth: Profunditat
             height: Alçada
-            images: Imatges
             on_hand: Stock actual
             price: Preu
             sku: SKU

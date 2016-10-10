@@ -37,16 +37,28 @@ interface OrderRepositoryInterface extends RepositoryInterface
     public function findLatest($count);
 
     /**
-     * @param int|string $number
-     *
-     * @return bool
-     */
-    public function isNumberUsed($number);
-
-    /**
      * @param string $orderNumber
      *
      * @return OrderInterface|null
      */
     public function findOneByNumber($orderNumber);
+
+    /**
+     * @return OrderInterface|null
+     */
+    public function findCartById($id);
+
+    /**
+     * @param \DateTime $terminalDate
+     *
+     * @return OrderInterface[]
+     */
+    public function findCartsNotModifiedSince(\DateTime $terminalDate);
+
+    /**
+     * @param \DateTime $terminalDate
+     *
+     * @return OrderInterface[]
+     */
+    public function findOrdersUnpaidSince(\DateTime $terminalDate);
 }

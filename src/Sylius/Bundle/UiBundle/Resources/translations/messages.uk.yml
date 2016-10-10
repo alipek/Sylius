@@ -16,8 +16,8 @@ sylius:
         add_attributes: Додати атрибути
         add_coupon: Додати купон
         add_image: Додати зображення
-        add_member: Додати члена групи
-        add_province: Додати провінцію
+        add_member: Додати учасника
+        add_province: Додати регіон
         add_rule: Додати правило
         add_to_cart: У кошик
         add_value: Додати значення
@@ -186,7 +186,7 @@ sylius:
         manage_tax_rates: Керувати податковими ставками
         manage_zones: Керувати зонами
         marketing: Маркетинг
-        members: Члени
+        members: Учасники
         menu_nodes: Елементи меню
         menus: Меню
         message: Повідомлення
@@ -213,7 +213,6 @@ sylius:
         new_zone: Нова зона
         newest_products: Найновіші продукти
         next: Наступний
-        "no": false
         no_default_billing_address: Немає платіжної адреси за замовчуванням
         no_default_shipping_address: Немає адреси доставки за замовчуванням
         no_description: Немає опису
@@ -258,16 +257,15 @@ sylius:
         pricing: Ціноутворення
         processing: В процесі
         product: Товар
-        product_archetypes: Прототипи продуктів
         products: Продукти
         products_categorized_as_name: 'Продукт категоризовано як "%name%"'
         products_categorized_under_taxon_taxon: 'Товари <small> категорії "%taxon%" </small>'
         promotion_coupons: Купони
         promotion_details: Подробиці акції
         promotion_total: Загальна сума промо-знижки
-        promotions: Промо-акції
-        province: Область
-        provinces: Області
+        promotions: Промоції
+        province: Регіон
+        provinces: Регіони
         qty: К-сть
         quantity: К-сть
         ready: Готовий
@@ -289,7 +287,7 @@ sylius:
         sales_this_month: Продажі
         save: Зберегти
         save_changes: Зберегти зміни
-        scope: Сфера
+        scope: Покриття
         search: Пошук
         security_settings: Налаштування безпеки
         set_as_default_billing_address: Встановити як платіжну адресу за замовчуванням
@@ -355,7 +353,6 @@ sylius:
         void: Порожнє
         warning: Попередження
         welcome_to_your_space: Ласкаво просимо до вашого простору
-        "yes": true
         you_are_customer_since: Ви є клієнтом з
         you_have_no_new_orders: У вас немає нових замовлень
         your_cart_is_empty: Ваш кошик пустий
@@ -363,4 +360,4 @@ sylius:
         your_products: Ваші продукти
         zone: Зона
         zone_details: Подробиці про зону
-        zones: Пояси
+        zones: Зони

@@ -13,7 +13,8 @@ namespace Sylius\Behat\Page\Shop\Product;
 
 use Behat\Mink\Exception\ElementNotFoundException;
 use Sylius\Behat\Page\PageInterface;
-use Sylius\Component\Product\Model\OptionInterface;
+use Sylius\Component\Product\Model\ProductOptionInterface;
+use Sylius\Component\Product\Model\ProductInterface;
 
 /**
  * @author Łukasz Chruściel <lukasz.chrusciel@lakion.com>
@@ -41,12 +42,12 @@ interface ShowPageInterface extends PageInterface
     public function addToCartWithVariant($variant);
 
     /**
-     * @param OptionInterface $option
+     * @param ProductOptionInterface $option
      * @param string $optionValue
      *
      * @throws ElementNotFoundException
      */
-    public function addToCartWithOption(OptionInterface $option, $optionValue);
+    public function addToCartWithOption(ProductOptionInterface $option, $optionValue);
 
     /**
      * @return string
@@ -67,6 +68,18 @@ interface ShowPageInterface extends PageInterface
     public function hasAttributeWithValue($attributeName, $AttributeValue);
 
     /**
+     * @param ProductInterface $product
+     *
+     * @return bool
+     */
+    public function hasProductOutOfStockValidationMessage(ProductInterface $product);
+
+    /**
+     * @param int $timeout
+     */
+    public function waitForValidationErrors($timeout);
+
+    /**
      * @return bool
      */
     public function isOutOfStock();
@@ -80,4 +93,20 @@ interface ShowPageInterface extends PageInterface
      * @return string
      */
     public function getPrice();
+
+    /**
+     * @return bool
+     */
+    public function isMainImageDisplayed();
+
+    /**
+     * @param string $optionName
+     * @param string $optionValue
+     */
+    public function selectOption($optionName, $optionValue);
+
+    /**
+     * @param string $variantName
+     */
+    public function selectVariant($variantName);
 }

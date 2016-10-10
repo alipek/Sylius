@@ -13,22 +13,27 @@ namespace Sylius\Behat\Context\Setup;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Element\NodeElement;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sylius\Component\Attribute\Factory\AttributeFactoryInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
+use Sylius\Component\Core\Uploader\ImageUploaderInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
-use Sylius\Component\Product\Model\AttributeInterface;
-use Sylius\Component\Product\Model\AttributeValueInterface;
-use Sylius\Component\Product\Model\OptionInterface;
-use Sylius\Component\Product\Model\OptionValueInterface;
+use Sylius\Component\Product\Model\ProductAttributeInterface;
+use Sylius\Component\Product\Model\ProductAttributeValueInterface;
+use Sylius\Component\Product\Model\ProductOptionInterface;
+use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Taxation\Model\TaxCategoryInterface;
-use Sylius\Component\Variation\Resolver\VariantResolverInterface;
+use Sylius\Component\Product\Resolver\ProductVariantResolverInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @author Arkadiusz Krakowiak <arkadiusz.krakowiak@lakion.com>
@@ -51,6 +56,11 @@ final class ProductContext implements Context
      * @var ProductFactoryInterface
      */
     private $productFactory;
+
+    /**
+     * @var FactoryInterface
+     */
+    private $productTranslationFactory;
 
     /**
      * @var AttributeFactoryInterface
@@ -78,55 +88,82 @@ final class ProductContext implements Context
     private $productOptionValueFactory;
 
     /**
+     * @var FactoryInterface
+     */
+    private $productImageFactory;
+
+    /**
      * @var ObjectManager
      */
     private $objectManager;
 
     /**
-     * @var VariantResolverInterface
+     * @var ProductVariantResolverInterface
      */
     private $defaultVariantResolver;
+
+    /**
+     * @var ImageUploaderInterface
+     */
+    private $imageUploader;
+
+    /**
+     * @var array
+     */
+    private $minkParameters;
 
     /**
      * @param SharedStorageInterface $sharedStorage
      * @param ProductRepositoryInterface $productRepository
      * @param ProductFactoryInterface $productFactory
+     * @param FactoryInterface $productTranslationFactory
      * @param AttributeFactoryInterface $productAttributeFactory
      * @param FactoryInterface $productVariantFactory
      * @param FactoryInterface $attributeValueFactory
      * @param FactoryInterface $productOptionFactory
      * @param FactoryInterface $productOptionValueFactory
+     * @param FactoryInterface $productImageFactory
      * @param ObjectManager $objectManager
-     * @param VariantResolverInterface $defaultVariantResolver
+     * @param ProductVariantResolverInterface $defaultVariantResolver
+     * @param ImageUploaderInterface $imageUploader
+     * @param array $minkParameters
      */
     public function __construct(
         SharedStorageInterface $sharedStorage,
         ProductRepositoryInterface $productRepository,
         ProductFactoryInterface $productFactory,
+        FactoryInterface $productTranslationFactory,
         AttributeFactoryInterface $productAttributeFactory,
         FactoryInterface $attributeValueFactory,
         FactoryInterface $productVariantFactory,
         FactoryInterface $productOptionFactory,
         FactoryInterface $productOptionValueFactory,
+        FactoryInterface $productImageFactory,
         ObjectManager $objectManager,
-        VariantResolverInterface $defaultVariantResolver
+        ProductVariantResolverInterface $defaultVariantResolver,
+        ImageUploaderInterface $imageUploader,
+        array $minkParameters
     ) {
         $this->sharedStorage = $sharedStorage;
         $this->productRepository = $productRepository;
         $this->productFactory = $productFactory;
+        $this->productTranslationFactory = $productTranslationFactory;
         $this->productAttributeFactory = $productAttributeFactory;
         $this->attributeValueFactory = $attributeValueFactory;
         $this->productVariantFactory = $productVariantFactory;
         $this->productOptionFactory = $productOptionFactory;
         $this->productOptionValueFactory = $productOptionValueFactory;
+        $this->productImageFactory = $productImageFactory;
         $this->objectManager = $objectManager;
+        $this->imageUploader = $imageUploader;
         $this->defaultVariantResolver = $defaultVariantResolver;
+        $this->minkParameters = $minkParameters;
     }
 
     /**
      * @Given the store has a product :productName
      * @Given the store has a :productName product
-     * @Given /^the store has a product "([^"]+)" priced at ("[^"]+")$/
+     * @Given /^the store(?:| also) has a product "([^"]+)" priced at ("[^"]+")$/
      */
     public function storeHasAProductPricedAt($productName, $price = 0)
     {
@@ -135,11 +172,41 @@ final class ProductContext implements Context
         $product->setDescription('Awesome '.$productName);
 
         if ($this->sharedStorage->has('channel')) {
-            $channel = $this->sharedStorage->get('channel');
-            $product->addChannel($channel);
+            $product->addChannel($this->sharedStorage->get('channel'));
         }
 
         $this->saveProduct($product);
+    }
+
+    /**
+     * @Given the store( also) has a product :productName with code :code
+     */
+    public function storeHasProductWithCode($productName, $code)
+    {
+        $product = $this->createProduct($productName, 0);
+
+        $product->setCode($code);
+
+        if ($this->sharedStorage->has('channel')) {
+            $product->addChannel($this->sharedStorage->get('channel'));
+        }
+
+        $this->saveProduct($product);
+    }
+
+    /**
+     * @Given /^(this product) is named "([^"]+)" (in the "([^"]+)" locale)$/
+     */
+    public function thisProductIsNamedIn(ProductInterface $product, $name, $locale)
+    {
+        /** @var ProductTranslationInterface $translation */
+        $translation = $this->productTranslationFactory->createNew();
+        $translation->setLocale($locale);
+        $translation->setName($name);
+
+        $product->addTranslation($translation);
+
+        $this->objectManager->flush();
     }
 
     /**
@@ -147,11 +214,17 @@ final class ProductContext implements Context
      */
     public function storeHasAConfigurableProduct($productName)
     {
+        /** @var ProductInterface $product */
         $product = $this->productFactory->createNew();
 
         $product->setName($productName);
         $product->setCode($this->convertToCode($productName));
         $product->setDescription('Awesome '.$productName);
+
+        if ($this->sharedStorage->has('channel')) {
+            $channel = $this->sharedStorage->get('channel');
+            $product->addChannel($channel);
+        }
 
         $this->saveProduct($product);
     }
@@ -166,11 +239,13 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Given /^the (product "[^"]+") has "([^"]+)" variant priced at ("[^"]+")$/
+     * @Given /^the (product "[^"]+") has(?:| a) "([^"]+)" variant priced at ("[^"]+")$/
      * @Given /^(this product) has "([^"]+)" variant priced at ("[^"]+")$/
      */
     public function theProductHasVariantPricedAt(ProductInterface $product, $productVariantName, $price)
     {
+        $product->setVariantSelectionMethod(ProductInterface::VARIANT_SELECTION_CHOICE);
+
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantFactory->createNew();
 
@@ -291,38 +366,37 @@ final class ProductContext implements Context
 
     /**
      * @Given /^(this product) has option "([^"]+)" with values "([^"]+)" and "([^"]+)"$/
+     * @Given /^(this product) has option "([^"]+)" with values "([^"]+)", "([^"]+)" and "([^"]+)"$/
      */
-    public function thisProductHasOptionWithValues(ProductInterface $product, $optionName, $firstValue, $secondValue)
-    {
-        /** @var OptionInterface $variant */
+    public function thisProductHasOptionWithValues(
+        ProductInterface $product,
+        $optionName,
+        $firstValue,
+        $secondValue,
+        $thirdValue = null
+    ) {
+        /** @var ProductOptionInterface $option */
         $option = $this->productOptionFactory->createNew();
 
         $option->setName($optionName);
-        $option->setCode('PO1');
+        $option->setCode(strtoupper($optionName));
 
-        /** @var OptionValueInterface $optionValue */
-        $firstOptionValue = $this->productOptionValueFactory->createNew();
+        $firstOptionValue = $this->addProductOption($option, $firstValue, 'POV1');
+        $secondOptionValue = $this->addProductOption($option, $secondValue, 'POV2');
 
-        $firstOptionValue->setValue($firstValue);
-        $firstOptionValue->setCode('POV1');
-        $firstOptionValue->setOption($option);
-
-        /** @var OptionValueInterface $optionValue */
-        $secondOptionValue = $this->productOptionValueFactory->createNew();
-
-        $secondOptionValue->setValue($secondValue);
-        $secondOptionValue->setCode('POV2');
-        $secondOptionValue->setOption($option);
-
-        $option->addValue($firstOptionValue);
-        $option->addValue($secondOptionValue);
+        if (null !== $thirdValue) {
+            $thirdOptionValue = $this->addProductOption($option, $thirdValue, 'POV3');
+        }
 
         $product->addOption($option);
         $product->setVariantSelectionMethod(ProductInterface::VARIANT_SELECTION_MATCH);
 
-        $this->sharedStorage->set(sprintf('%s_option',$optionName), $option);
-        $this->sharedStorage->set(sprintf('%s_option_value',$firstValue), $firstOptionValue);
-        $this->sharedStorage->set(sprintf('%s_option_value',$secondValue), $secondOptionValue);
+        $this->sharedStorage->set(sprintf('%s_option', $optionName), $option);
+        $this->sharedStorage->set(sprintf('%s_option_%s_value', $firstValue, strtolower($optionName)), $firstOptionValue);
+        $this->sharedStorage->set(sprintf('%s_option_%s_value', $secondValue, strtolower($optionName)), $secondOptionValue);
+        if (null !== $thirdValue) {
+            $this->sharedStorage->set(sprintf('%s_option_%s_value', $thirdValue, strtolower($optionName)), $thirdOptionValue);
+        }
 
         $this->objectManager->persist($option);
         $this->objectManager->persist($firstOptionValue);
@@ -331,7 +405,8 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Given /^there (?:is|are) (\d+) item(?:s) of (product "([^"]+)") available in the inventory$/
+     * @Given /^there (?:is|are) (\d+) (?:item|unit)(?:|s) of (product "([^"]+)") available in the inventory$/
+     * @When product :product quantity is changed to :quantity
      */
     public function thereIsQuantityOfProducts($quantity, ProductInterface $product)
     {
@@ -349,16 +424,40 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Given /^(this product) is available in "([^"]+)" size priced at ("[^"]+")$/
+     * @When other customer has bought :quantity :product products by this time
      */
-    public function thisProductIsAvailableInSize(ProductInterface $product, $optionValueName, $price)
+    public function otherCustomerHasBoughtProductsByThisTime($quantity, ProductInterface $product)
+    {
+        /** @var ProductVariantInterface $productVariant */
+        $productVariant = $this->defaultVariantResolver->getVariant($product);
+        $productQuantity = $productVariant->getOnHand() - $quantity;
+
+        $this->setProductsQuantity($product, $productQuantity);
+    }
+
+    /**
+     * @Given /^(this product) is tracked by the inventory$/
+     * @Given /^("[^"]+" product) is(?:| also) tracked by the inventory$/
+     */
+    public function thisProductIsTrackedByTheInventory(ProductInterface $product)
+    {
+        $variant = $this->defaultVariantResolver->getVariant($product);
+        $variant->setTracked(true);
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^(this product) is available in "([^"]+)" ([^"]+) priced at ("[^"]+")$/
+     */
+    public function thisProductIsAvailableInSize(ProductInterface $product, $optionValueName, $optionName, $price)
     {
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantFactory->createNew();
 
-        $optionValue = $this->sharedStorage->get(sprintf('%s_option_value',$optionValueName));
+        $optionValue = $this->sharedStorage->get(sprintf('%s_option_%s_value', $optionValueName, $optionName));
 
-        $variant->addOption($optionValue);
+        $variant->addOptionValue($optionValue);
         $variant->setPrice($price);
         $variant->setCode(sprintf("%s_%s", $product->getCode(), $optionValueName));
 
@@ -371,7 +470,7 @@ final class ProductContext implements Context
      * @Given /^(this product) has a ("[^"]+" option)$/
      * @Given /^(this product) has an ("[^"]+" option)$/
      */
-    public function thisProductHasThisProductOption(ProductInterface $product, OptionInterface $option)
+    public function thisProductHasThisProductOption(ProductInterface $product, ProductOptionInterface $option)
     {
         $product->addOption($option);
 
@@ -379,11 +478,72 @@ final class ProductContext implements Context
     }
 
     /**
+     * @Given /^there are ([^"]+) items of ("[^"]+" variant of product "[^"]+") available in the inventory$/
+     */
+    public function thereAreItemsOfProductInVariantAvailableInTheInventory($quantity, ProductVariantInterface $productVariant)
+    {
+        $productVariant->setTracked(true);
+        $productVariant->setOnHand($quantity);
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^the ("[^"]+" product) is tracked by the inventory$/
+     */
+    public function theProductIsTrackedByTheInventory(ProductInterface $product)
+    {
+        $productVariant = $this->defaultVariantResolver->getVariant($product);
+        $productVariant->setTracked(true);
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^the ("[^"]+" product variant) is tracked by the inventory$/
+     */
+    public function theProductVariantIsTrackedByTheInventory(ProductVariantInterface $productVariant)
+    {
+        $productVariant->setTracked(true);
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^the (product "[^"]+") changed its price to ("[^"]+")$/
+     */
+    public function theProductChangedItsPriceTo(ProductInterface $product, $price)
+    {
+        $product->getFirstVariant()->setPrice($price);
+
+        $this->objectManager->flush();
+    }
+
+    /**
+     * @Given /^(this product) has(?:| also) an image "([^"]+)" with a code "([^"]+)"$/
+     * @Given /^the ("[^"]+" product) has(?:| also) an image "([^"]+)" with a code "([^"]+)"$/
+     */
+    public function thisProductHasAnImageWithACode(ProductInterface $product, $imagePath, $imageCode)
+    {
+        $filesPath = $this->getParameter('files_path');
+
+        /** @var ImageInterface $productImage */
+        $productImage = $this->productImageFactory->createNew();
+        $productImage->setFile(new UploadedFile($filesPath.$imagePath, basename($imagePath)));
+        $productImage->setCode($imageCode);
+        $this->imageUploader->upload($productImage);
+
+        $product->addImage($productImage);
+
+        $this->objectManager->flush($product);
+    }
+
+    /**
      * @param string $type
      * @param string $name
      * @param string $code
      *
-     * @return AttributeInterface
+     * @return ProductAttributeInterface
      */
     private function createProductAttribute($type, $name, $code = 'PA112')
     {
@@ -399,11 +559,11 @@ final class ProductContext implements Context
     /**
      * @param string $value
      *
-     * @return AttributeValueInterface
+     * @return ProductAttributeValueInterface
      */
-    private function createProductAttributeValue($value, AttributeInterface $attribute)
+    private function createProductAttributeValue($value, ProductAttributeInterface $attribute)
     {
-        /** @var AttributeValueInterface $attributeValue */
+        /** @var ProductAttributeValueInterface $attributeValue */
         $attributeValue = $this->attributeValueFactory->createNew();
         $attributeValue->setAttribute($attribute);
         $attributeValue->setValue($value);
@@ -445,6 +605,27 @@ final class ProductContext implements Context
     }
 
     /**
+     * @param ProductOptionInterface $option
+     * @param string $value
+     * @param string $code
+     *
+     * @return ProductOptionValueInterface
+     */
+    private function addProductOption(ProductOptionInterface $option, $value, $code)
+    {
+        /** @var ProductOptionValueInterface $optionValue */
+        $optionValue = $this->productOptionValueFactory->createNew();
+
+        $optionValue->setValue($value);
+        $optionValue->setCode($code);
+        $optionValue->setOption($option);
+
+        $option->addValue($optionValue);
+
+        return $optionValue;
+    }
+
+    /**
      * @param ProductInterface $product
      * @param int $quantity
      */
@@ -471,6 +652,16 @@ final class ProductContext implements Context
      */
     private function convertToCode($productName)
     {
-        return StringInflector::nameToUpercaseCode($productName);
+        return StringInflector::nameToUppercaseCode($productName);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return NodeElement
+     */
+    private function getParameter($name)
+    {
+        return isset($this->minkParameters[$name]) ? $this->minkParameters[$name] : null;
     }
 }

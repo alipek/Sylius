@@ -98,19 +98,16 @@
         "phpspec/phpspec": "^3.0",
         "phpunit/phpunit": "~4.1",
         "se/selenium-server-standalone": "^2.52",
-        "friends-of-behat/performance-extension": "^1.0"
+        "friends-of-behat/performance-extension": "^1.0",
+        "friends-of-behat/variadic-extension": "^0.1.0"
     },
     "replace": {
         "sylius/addressing": "self.version",
         "sylius/addressing-bundle": "self.version",
         "sylius/admin-bundle": "self.version",
         "sylius/api-bundle": "self.version",
-        "sylius/archetype": "self.version",
-        "sylius/archetype-bundle": "self.version",
         "sylius/attribute": "self.version",
         "sylius/attribute-bundle": "self.version",
-        "sylius/cart": "self.version",
-        "sylius/cart-bundle": "self.version",
         "sylius/contact": "self.version",
         "sylius/contact-bundle": "self.version",
         "sylius/content-bundle": "self.version",
@@ -121,8 +118,6 @@
         "sylius/customer": "self.version",
         "sylius/customer-bundle": "self.version",
         "sylius/fixtures-bundle": "self.version",
-        "sylius/flow-bundle": "self.version",
-        "sylius/installer-bundle": "self.version",
         "sylius/inventory": "self.version",
         "sylius/inventory-bundle": "self.version",
         "sylius/locale": "self.version",
@@ -139,11 +134,7 @@
         "sylius/product-bundle": "self.version",
         "sylius/promotion": "self.version",
         "sylius/promotion-bundle": "self.version",
-        "sylius/rbac": "self.version",
-        "sylius/rbac-bundle": "self.version",
         "sylius/registry": "self.version",
-        "sylius/report": "self.version",
-        "sylius/report-bundle": "self.version",
         "sylius/resource": "self.version",
         "sylius/resource-bundle": "self.version",
         "sylius/search-bundle": "self.version",
@@ -159,8 +150,6 @@
         "sylius/ui-bundle": "self.version",
         "sylius/user": "self.version",
         "sylius/user-bundle": "self.version",
-        "sylius/variation": "self.version",
-        "sylius/variation-bundle": "self.version",
         "sylius/web-bundle": "self.version"
     },
     "suggest": {
@@ -193,6 +182,11 @@
             "Sylius\\Behat\\": "src/Sylius/Behat/",
             "Sylius\\Bundle\\": "src/Sylius/Bundle/",
             "Sylius\\Component\\": "src/Sylius/Component/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sylius\\Tests\\": "tests/"
         }
     },
     "config": {

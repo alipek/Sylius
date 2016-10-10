@@ -45,19 +45,6 @@ class AdminUserSpec extends ObjectBehavior
         $this->shouldImplement(UserInterface::class);
     }
 
-    function its_authorization_roles_are_mutable(RoleInterface $role)
-    {
-        $this->addAuthorizationRole($role);
-        $this->hasAuthorizationRole($role)->shouldReturn(true);
-    }
-
-    function its_authorization_role_can_be_removed(RoleInterface $role)
-    {
-        $this->addAuthorizationRole($role);
-        $this->removeAuthorizationRole($role);
-        $this->hasAuthorizationRole($role)->shouldReturn(false);
-    }
-
     function it_has_first_name_and_last_name()
     {
         $this->setFirstName('John');
@@ -65,5 +52,12 @@ class AdminUserSpec extends ObjectBehavior
 
         $this->setLastName('Doe');
         $this->getLastName()->shouldReturn('Doe');
+    }
+
+    function it_has_mutable_locale_code()
+    {
+        $this->getLocaleCode()->shouldReturn(null);
+        $this->setLocaleCode('en_US');
+        $this->getLocaleCode()->shouldReturn('en_US');
     }
 }

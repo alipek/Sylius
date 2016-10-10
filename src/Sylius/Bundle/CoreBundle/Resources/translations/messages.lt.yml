@@ -36,6 +36,7 @@ sylius:
             payment_methods: Mokėjimo būdai
             tax_zone_default: Numatyta mokesčių zona
         image:
+            code: Kodas
             file: Paveikslėlis
         locale:
             code: Kodas
@@ -53,6 +54,7 @@ sylius:
             id: ID
             title: Pavadinimas
         product:
+            images: Paveikslėliai
             restricted_zone: Apribota zona
             shipping_category: Pristatymo kategorija
             short_description: Trumpas aprašymas
@@ -64,19 +66,6 @@ sylius:
             code: Kodas
         product_variant:
             tax_category: Mokesčių kategorija
-        settings:
-            general:
-                currency: Numatytoji valiuta
-                locale: Kalba
-                meta_description: Meta aprašymas
-                meta_keywords: Meta raktažodžiai
-                title: Puslapio antraštė
-                tracking_code:
-                    Tracking code (for example: Google Analytics kodas)
-            taxation:
-                default_tax_zone: Numatyta mokesčių zona
-            security:
-                enabled: Įgalinti?
         shipment_filter:
             created_at_from: Nuo
             created_at_to: Iki
@@ -92,7 +81,9 @@ sylius:
         shipping_method:
             zone: Zona
         taxon:
+            code: Kodas
             file: Pasirinkite paveikslėlį
+            images: Paveikslėliai
         taxonomy:
             file: Pasirinkite paveikslėlį
         user:
@@ -110,7 +101,6 @@ sylius:
         variant:
             depth: Gylis
             height: Aukštis
-            images: Paveikslėliai
             on_hand: Dabartinės atsargos
             price: Kaina
             sku: Kodas

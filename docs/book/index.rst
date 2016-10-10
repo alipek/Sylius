@@ -1,6 +1,8 @@
 The Book
 ========
 
+The Developer's guide to leveraging the flexibility of Sylius.
+
 .. toctree::
     :hidden:
 
@@ -16,20 +18,24 @@ The Book
     currencies
     countries
     zones
+    addresses
+    customer_and_shopuser
+    adminuser
     products
     attributes
     taxons
-    addresses
     inventory
     orders
+    checkout
     shipments
     payments
     taxation
     pricing
     promotions
-    users_and_groups
+    coupons
     content
     emails
     settings
+    adjustments
 
 .. include:: /book/map.rst.inc

@@ -15,7 +15,7 @@
     <services>
         <service id="sylius.behat.context.setup.channel" class="Sylius\Behat\Context\Setup\ChannelContext" scope="scenario">
             <argument type="service" id="sylius.behat.shared_storage" />
-            <argument type="service" id="sylius.behat.factory.default_france_channel" container="symfony" />
+            <argument type="service" id="sylius.behat.factory.default_united_states_channel" container="symfony" />
             <argument type="service" id="sylius.behat.factory.default_channel" container="symfony" />
             <argument type="service" id="sylius.factory.channel" container="symfony" />
             <argument type="service" id="sylius.repository.channel" container="symfony" />
@@ -27,6 +27,7 @@
             <argument type="service" id="sylius.behat.shared_storage" />
             <argument type="service" id="sylius.repository.currency" container="symfony" />
             <argument type="service" id="sylius.factory.currency" container="symfony" />
+            <argument type="service" id="sylius.storage.currency" container="symfony" />
             <argument type="service" id="sylius.manager.currency" container="symfony" />
             <argument type="service" id="sylius.manager.channel" container="symfony" />
             <tag name="sylius.behat.context" />
@@ -69,11 +70,13 @@
             <argument type="service" id="sylius.order_processing.order_processor" container="symfony" />
             <argument type="service" id="sylius.factory.order_item" container="symfony" />
             <argument type="service" id="sylius.order_item_quantity_modifier" container="symfony" />
+            <argument type="service" id="sylius.repository.currency" container="symfony" />
+            <argument type="service" id="sylius.storage.currency" container="symfony" />
             <argument type="service" id="sylius.factory.customer" container="symfony" />
             <argument type="service" id="sylius.repository.customer" container="symfony" />
             <argument type="service" id="doctrine.orm.entity_manager" container="symfony" />
             <argument type="service" id="sm.factory" container="symfony" />
-            <argument type="service" id="sylius.variant_resolver.default" container="symfony" />
+            <argument type="service" id="sylius.product_variant_resolver.default" container="symfony" />
             <tag name="sylius.behat.context" />
         </service>
 
@@ -81,6 +84,7 @@
             <argument type="service" id="sylius.behat.shared_storage" />
             <argument type="service" id="sylius.repository.payment_method" container="symfony" />
             <argument type="service" id="sylius.factory.payment_method" container="symfony" />
+            <argument type="service" id="sylius.factory.payment_method_translation" container="symfony" />
             <argument type="service" id="sylius.payment_method_name_to_gateway_converter" container="symfony" />
             <argument type="service" id="doctrine.orm.entity_manager" container="symfony" />
             <tag name="sylius.behat.context" />
@@ -90,13 +94,17 @@
             <argument type="service" id="sylius.behat.shared_storage" />
             <argument type="service" id="sylius.repository.product" container="symfony" />
             <argument type="service" id="sylius.factory.product" container="symfony" />
+            <argument type="service" id="sylius.factory.product_translation" container="symfony" />
             <argument type="service" id="sylius.factory.product_attribute" container="symfony" />
             <argument type="service" id="sylius.factory.product_attribute_value" container="symfony" />
             <argument type="service" id="sylius.factory.product_variant" container="symfony" />
             <argument type="service" id="sylius.factory.product_option" container="symfony" />
             <argument type="service" id="sylius.factory.product_option_value" container="symfony" />
+            <argument type="service" id="sylius.factory.product_image" container="symfony" />
             <argument type="service" id="doctrine.orm.entity_manager" container="symfony" />
-            <argument type="service" id="sylius.variant_resolver.default" container="symfony" />
+            <argument type="service" id="sylius.product_variant_resolver.default" container="symfony" />
+            <argument type="service" id="sylius.image_uploader" container="symfony" />
+            <argument>%mink.parameters%</argument>
             <tag name="sylius.behat.context" />
         </service>
 
@@ -163,6 +171,7 @@
             <argument type="service" id="sylius.repository.shipping_method" container="symfony" />
             <argument type="service" id="sylius.repository.zone" container="symfony" />
             <argument type="service" id="sylius.factory.shipping_method" container="symfony" />
+            <argument type="service" id="sylius.factory.shipping_method_translation" container="symfony" />
             <argument type="service" id="sylius.manager.shipping_method" container="symfony" />
             <tag name="sylius.behat.context" />
         </service>
@@ -181,13 +190,17 @@
             <argument type="service" id="sylius.repository.tax_rate" container="symfony" />
             <argument type="service" id="sylius.repository.tax_category" container="symfony" />
             <argument type="service" id="sylius.repository.zone" container="symfony" />
+            <argument type="service" id="doctrine.orm.entity_manager" container="symfony" />
             <tag name="sylius.behat.context" />
         </service>
 
         <service id="sylius.behat.context.setup.taxonomy" class="Sylius\Behat\Context\Setup\TaxonomyContext" scope="scenario">
             <argument type="service" id="sylius.repository.taxon" container="symfony" />
             <argument type="service" id="sylius.factory.taxon" container="symfony" />
+            <argument type="service" id="sylius.factory.taxon_image" container="symfony" />
             <argument type="service" id="doctrine.orm.entity_manager" container="symfony" />
+            <argument type="service" id="sylius.image_uploader" container="symfony" />
+            <argument>%mink.parameters%</argument>
             <tag name="sylius.behat.context" />
         </service>
 
